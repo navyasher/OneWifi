@@ -1640,6 +1640,7 @@
         PJS_OVS_STRING(snr_list, 128 + 1) \
         PJS_OVS_STRING(cli_stat_list, 128 + 1) \
         PJS_OVS_STRING(txrx_rate_list, 128 + 1) \
+        PJS_OVS_BOOL(test_parameter) \
         PJS_OVS_BOOL(mgt_frame_rate_limit_enable) \
         PJS_OVS_INT(mgt_frame_rate_limit) \
         PJS_OVS_INT(mgt_frame_rate_limit_window_size) \
@@ -3318,6 +3319,7 @@
     COLUMN(snr_list) \
     COLUMN(cli_stat_list) \
     COLUMN(txrx_rate_list) \
+    COLUMN(test_parameter) \
     COLUMN(mgt_frame_rate_limit_enable) \
     COLUMN(mgt_frame_rate_limit) \
     COLUMN(mgt_frame_rate_limit_window_size) \
@@ -4591,6 +4593,7 @@
 #define SCHEMA__Wifi_Global_Config__snr_list "snr_list"
 #define SCHEMA__Wifi_Global_Config__cli_stat_list "cli_stat_list"
 #define SCHEMA__Wifi_Global_Config__txrx_rate_list "txrx_rate_list"
+#define SCHEMA__Wifi_Global_Config__test_parameter "test_parameter"
 #define SCHEMA__Wifi_Global_Config__mgt_frame_rate_limit_enable "mgt_frame_rate_limit_enable"
 #define SCHEMA__Wifi_Global_Config__mgt_frame_rate_limit "mgt_frame_rate_limit"
 #define SCHEMA__Wifi_Global_Config__mgt_frame_rate_limit_window_size "mgt_frame_rate_limit_window_size"

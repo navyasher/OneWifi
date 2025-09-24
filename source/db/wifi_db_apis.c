@@ -79,7 +79,7 @@
 #define WPA3_COMPATIBILITY 8192
 #define ONEWIFI_DB_VERSION_HOSTAP_MGMT_FRAME_CTRL_FLAG 100033
 #define ONEWIFI_DB_VERSION_RSS_MEMORY_THRESHOLD_FLAG 100035
-#define ONEWIFI_DB_VERSION_MGT_FRAME_RATE_LIMIT 100036
+#define ONEWIFI_DB_VERSION_MGT_FRAME_RATE_LIMIT 100043
 #define ONEWIFI_DB_VERSION_MANAGED_WIFI_FLAG 100038
 #define ONEWIFI_DB_VERSION_WPA3_T_DISABLE_FLAG 100039
 #define DEFAULT_MANAGED_WIFI_SPEED_TIER 2
@@ -1324,6 +1324,10 @@ void callback_Wifi_Global_Config(ovsdb_update_monitor_t *mon,
                     1] = '\0';
         }
 
+        g_wifidb->global_config.global_parameters.test_parameter =
+            new_rec->test_parameter;
+        wifi_util_dbg_print(WIFI_DMCLI, "%s:%d unique123 TestParameter updated in cache: %s\n", __func__, __LINE__, 
+                           new_rec->test_parameter ? "true" : "false");
         g_wifidb->global_config.global_parameters.mgt_frame_rate_limit_enable =
             new_rec->mgt_frame_rate_limit_enable;
         g_wifidb->global_config.global_parameters.mgt_frame_rate_limit =
@@ -3224,6 +3228,9 @@ int wifidb_update_wifi_global_config(wifi_global_param_t *config)
     strncpy(cfg.txrx_rate_list,config->txrx_rate_list,sizeof(cfg.txrx_rate_list)-1);
     cfg.txrx_rate_list[sizeof(cfg.txrx_rate_list)-1] = '\0';
 
+    cfg.test_parameter = config->test_parameter;
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d unique123 TestParameter saved to DB: %s\n", __func__, __LINE__, 
+                       config->test_parameter ? "true" : "false");
     cfg.mgt_frame_rate_limit_enable = config->mgt_frame_rate_limit_enable;
     cfg.mgt_frame_rate_limit = config->mgt_frame_rate_limit;
     cfg.mgt_frame_rate_limit_window_size = config->mgt_frame_rate_limit_window_size;
@@ -3375,6 +3382,7 @@ int wifidb_get_wifi_global_config(wifi_global_param_t *config)
             strncpy(config->txrx_rate_list,pcfg->txrx_rate_list,sizeof(config->txrx_rate_list)-1);
             config->txrx_rate_list[sizeof(config->txrx_rate_list)-1] = '\0';
         }
+        config->test_parameter = pcfg->test_parameter;
         config->mgt_frame_rate_limit_enable = pcfg->mgt_frame_rate_limit_enable;
         config->mgt_frame_rate_limit = pcfg->mgt_frame_rate_limit;
         config->mgt_frame_rate_limit_window_size = pcfg->mgt_frame_rate_limit_window_size;
@@ -4678,6 +4686,7 @@ static void wifidb_global_config_upgrade()
     if (g_wifidb->db_version < ONEWIFI_DB_VERSION_MGT_FRAME_RATE_LIMIT) {
         wifi_util_dbg_print(WIFI_DB, "%s:%d upgrade global config, old db version %d \n", __func__,
             __LINE__, g_wifidb->db_version);
+        g_wifidb->global_config.global_parameters.test_parameter = false;
         g_wifidb->global_config.global_parameters.mgt_frame_rate_limit_enable = false;
         g_wifidb->global_config.global_parameters.mgt_frame_rate_limit = 10;
         g_wifidb->global_config.global_parameters.mgt_frame_rate_limit_window_size = 1;
@@ -7477,6 +7486,7 @@ int wifidb_init_global_config_default(wifi_global_param_t *config)
     strncpy(cfg.txrx_rate_list, tempBuf, sizeof(cfg.txrx_rate_list)-1);
     cfg.txrx_rate_list[sizeof(cfg.txrx_rate_list)-1] = '\0';
 
+    cfg.test_parameter = false;
     cfg.mgt_frame_rate_limit_enable = false;
     cfg.mgt_frame_rate_limit = 10;
     cfg.mgt_frame_rate_limit_window_size = 1;

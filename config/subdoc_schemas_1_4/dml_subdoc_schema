@@ -44,6 +44,7 @@
 		"SNRList": "1,2",
 		"CliStatList": "1,2",
 		"TxRxRateList": "1,2",
+		"TestParameter": false,
 		"MgtFrameRateLimitEnable": false,
 		"MgtFrameRateLimit": 10,
 		"MgtFrameRateLimitWindowSize": 1,

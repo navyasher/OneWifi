@@ -1814,6 +1814,12 @@ int validate_wifi_global_config(const cJSON *global_cfg, wifi_global_param_t *gl
     validate_param_string(global_cfg, "TxRxRatetList", param);
     copy_string(global_info->txrx_rate_list, param->valuestring);
 
+    //TestParameter
+    validate_param_bool(global_cfg, "TestParameter", param);
+    global_info->test_parameter = (param->type & cJSON_True) ? true:false;
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d unique123 TestParameter validated: %s\n", __func__, __LINE__, 
+                       global_info->test_parameter ? "true" : "false");
+
     // MgtFrameRateLimitEnable
     validate_param_bool(global_cfg, "MgtFrameRateLimitEnable", param);
     global_info->mgt_frame_rate_limit_enable = (param->type & cJSON_True) ? true : false;

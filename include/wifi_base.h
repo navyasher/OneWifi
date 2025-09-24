@@ -519,6 +519,7 @@ typedef struct {
     char snr_list[MAX_BUF_LENGTH];
     char txrx_rate_list[MAX_BUF_LENGTH];
     memwraptool_config_t memwraptool;
+    bool test_parameter;
     bool mgt_frame_rate_limit_enable;
     int mgt_frame_rate_limit;
     int mgt_frame_rate_limit_window_size;

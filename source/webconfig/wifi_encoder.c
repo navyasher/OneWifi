@@ -806,6 +806,9 @@ webconfig_error_t encode_wifi_global_config(const wifi_global_param_t *global_in
     //TxRxRateList
     cJSON_AddStringToObject(global_obj, "TxRxRateList", global_info->txrx_rate_list);
 
+    // TestParameter
+    cJSON_AddBoolToObject(global_obj, "TestParameter", global_info->test_parameter);
+
     // MgtFrameRateLimitEnable
     cJSON_AddBoolToObject(global_obj, "MgtFrameRateLimitEnable",
         global_info->mgt_frame_rate_limit_enable);

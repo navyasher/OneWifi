@@ -1132,6 +1132,7 @@ CosaWifiInitialize
     webconfig_dml_t *webconfig_dml;
 
     CcspWifiTrace(("RDK_LOG_WARN, RDKB_SYSTEM_BOOT_UP_LOG : CosaWifiInitialize - WiFi initialize. \n"));
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d unique123 COSAWIFI_INIT: Starting CosaWifiInitialize\n", __func__, __LINE__);
 
     pMyObject->hPoamWiFiDm = (ANSC_HANDLE)pPoamWiFiDm;
     pMyObject->hSlapWiFiDm = (ANSC_HANDLE)pSlapWifiDm;
@@ -1149,6 +1150,8 @@ CosaWifiInitialize
 
         goto  EXIT;
     }
+
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d unique123 COSAWIFI_INIT: Registry folder setup complete\n", __func__, __LINE__);
 
     /*Get Wifi entry*/
     pPoamIrepFoWifi = 
@@ -1184,6 +1187,7 @@ CosaWifiInitialize
     get_stubs_descriptor()->v_secure_system_fn("touch /tmp/wifi_dml_complete");
     get_stubs_descriptor()->v_secure_system_fn("uptime > /tmp/wifi_dml_complete");
 
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d unique123 COSAWIFI_INIT: About to call get_all_param_from_psm_and_set_into_db\n", __func__, __LINE__);
     get_all_param_from_psm_and_set_into_db();
 
     webconfig_dml = (webconfig_dml_t *)get_webconfig_dml(); 
@@ -1192,10 +1196,12 @@ CosaWifiInitialize
         return -1;
     }
 
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d unique123 COSAWIFI_INIT: About to call init(webconfig_dml)\n", __func__, __LINE__);
     if (init(webconfig_dml) != 0) {
         wifi_util_dbg_print(WIFI_DMCLI, "%s: Failed to init\n", __FUNCTION__);
         return -1;
     }
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d unique123 COSAWIFI_INIT: init(webconfig_dml) completed successfully\n", __func__, __LINE__);
 
     wifi_util_dbg_print(WIFI_DMCLI, "%s: DML cahce %s\n", __FUNCTION__,webconfig_dml->radios[0].vaps.vap_map.vap_array[0].u.bss_info.ssid);
     CcspWifiTrace(("RDK_LOG_WARN, RDKB_SYSTEM_BOOT_UP_LOG : CosaWifiInitialize - WiFi initialization complete. \n"));
