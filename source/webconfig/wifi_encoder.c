@@ -691,6 +691,8 @@ webconfig_error_t encode_wifi_global_config(const wifi_global_param_t *global_in
 {
     char str[BUFFER_LENGTH_WIFIDB] = {0};
 
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d unique123 ENCODER: Starting encode_wifi_global_config\n", __func__, __LINE__);
+
     // NotifyWifiChanges
     cJSON_AddBoolToObject(global_obj, "NotifyWifiChanges",(const cJSON_bool) global_info->notify_wifi_changes);
 
@@ -807,7 +809,13 @@ webconfig_error_t encode_wifi_global_config(const wifi_global_param_t *global_in
     cJSON_AddStringToObject(global_obj, "TxRxRateList", global_info->txrx_rate_list);
 
     // TestParameter
-    cJSON_AddBoolToObject(global_obj, "TestParameter", global_info->test_parameter);
+    if (global_obj != NULL && global_info != NULL) {
+        cJSON_AddBoolToObject(global_obj, "TestParameter", global_info->test_parameter);
+        wifi_util_dbg_print(WIFI_DMCLI, "%s:%d unique123 TestParameter encoded: %s\n", __func__, __LINE__,
+                           global_info->test_parameter ? "true" : "false");
+    } else {
+        wifi_util_dbg_print(WIFI_DMCLI, "%s:%d unique123 TestParameter encode failed - NULL pointer\n", __func__, __LINE__);
+    }
 
     // MgtFrameRateLimitEnable
     cJSON_AddBoolToObject(global_obj, "MgtFrameRateLimitEnable",
@@ -845,6 +853,7 @@ webconfig_error_t encode_wifi_global_config(const wifi_global_param_t *global_in
     // MemwrapToolEnable
     cJSON_AddBoolToObject(global_obj, "MemwrapToolEnable", global_info->memwraptool.enable);
 
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d unique123 ENCODER: encode_wifi_global_config completed successfully\n", __func__, __LINE__);
     return webconfig_error_none;
 }
 

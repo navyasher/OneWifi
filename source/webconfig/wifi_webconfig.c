@@ -57,11 +57,22 @@ static webconfig_error_map_t    g_webconfig_erors[] =
 
 webconfig_error_t webconfig_encode(webconfig_t *config, webconfig_subdoc_data_t *data, webconfig_subdoc_type_t type)
 {
+    wifi_util_dbg_print(WIFI_WEBCONFIG, "%s:%d unique123 WEBCONFIG_ENCODE: Starting encode for type=%d\n", __func__, __LINE__, type);
+    
     data->signature = WEBCONFIG_MAGIC_SIGNATUTRE;
     data->type = type;
     data->descriptor |= webconfig_data_descriptor_decoded;
 
-    return webconfig_set(config, data);
+    wifi_util_dbg_print(WIFI_WEBCONFIG, "%s:%d unique123 WEBCONFIG_ENCODE: About to call webconfig_set\n", __func__, __LINE__);
+    webconfig_error_t result = webconfig_set(config, data);
+    
+    if (result != webconfig_error_none) {
+        wifi_util_dbg_print(WIFI_WEBCONFIG, "%s:%d unique123 WEBCONFIG_ENCODE: ERROR - webconfig_set failed with result=%d\n", __func__, __LINE__, result);
+    } else {
+        wifi_util_dbg_print(WIFI_WEBCONFIG, "%s:%d unique123 WEBCONFIG_ENCODE: webconfig_set SUCCESS\n", __func__, __LINE__);
+    }
+    
+    return result;
 }
 
 webconfig_error_t webconfig_decode(webconfig_t *config, webconfig_subdoc_data_t *data, const char *str)
@@ -187,26 +198,45 @@ webconfig_error_t webconfig_set(webconfig_t *config, webconfig_subdoc_data_t *da
     webconfig_subdoc_t  *doc;
     webconfig_error_t err = RETURN_OK;
 
+    wifi_util_dbg_print(WIFI_WEBCONFIG, "%s:%d unique123 WEBCONFIG_SET: Starting webconfig_set\n", __func__, __LINE__);
+
     if (validate_subdoc_data(config, data) == false) {
         wifi_util_error_print(WIFI_WEBCONFIG,"%s:%d: Invalid data .. not parsable\n", __func__, __LINE__);
+        wifi_util_dbg_print(WIFI_WEBCONFIG, "%s:%d unique123 WEBCONFIG_SET: ERROR - validate_subdoc_data failed\n", __func__, __LINE__);
         return webconfig_error_invalid_subdoc;
     }
+
+    wifi_util_dbg_print(WIFI_WEBCONFIG, "%s:%d unique123 WEBCONFIG_SET: validate_subdoc_data SUCCESS\n", __func__, __LINE__);
 
     doc = &config->subdocs[data->type];
     if (doc->access_check_subdoc(config, data) != webconfig_error_none) {
         wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: invalid access for subdocument type:%d in entity:%d\n",
             __func__, __LINE__, doc->type, config->initializer);
+        wifi_util_dbg_print(WIFI_WEBCONFIG, "%s:%d unique123 WEBCONFIG_SET: ERROR - access_check_subdoc failed\n", __func__, __LINE__);
         return webconfig_error_not_permitted;
     }
 
+    wifi_util_dbg_print(WIFI_WEBCONFIG, "%s:%d unique123 WEBCONFIG_SET: access_check_subdoc SUCCESS\n", __func__, __LINE__);
+
     if ((data->descriptor & webconfig_data_descriptor_decoded) == webconfig_data_descriptor_decoded) {
+        wifi_util_dbg_print(WIFI_WEBCONFIG, "%s:%d unique123 WEBCONFIG_SET: Starting decoded path - about to call translate_to_subdoc\n", __func__, __LINE__);
+        
         if ((err = doc->translate_to_subdoc(config, data)) != webconfig_error_none) {
             wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: Subdocument translation failed\n", __func__, __LINE__);
-        } else if ((err = doc->encode_subdoc(config, data)) != webconfig_error_none) {
-            wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: Subdocument encode failed\n", __func__, __LINE__);
-        } else if ((data->descriptor = webconfig_data_descriptor_encoded)
-                    && (config->apply_data(doc, data)) != webconfig_error_none) {
-            wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d Subdocument apply failed\n", __func__, __LINE__);
+            wifi_util_dbg_print(WIFI_WEBCONFIG, "%s:%d unique123 WEBCONFIG_SET: ERROR - translate_to_subdoc failed with err=%d\n", __func__, __LINE__, err);
+        } else {
+            wifi_util_dbg_print(WIFI_WEBCONFIG, "%s:%d unique123 WEBCONFIG_SET: translate_to_subdoc SUCCESS - about to call encode_subdoc\n", __func__, __LINE__);
+            
+            if ((err = doc->encode_subdoc(config, data)) != webconfig_error_none) {
+                wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: Subdocument encode failed\n", __func__, __LINE__);
+                wifi_util_dbg_print(WIFI_WEBCONFIG, "%s:%d unique123 WEBCONFIG_SET: ERROR - encode_subdoc failed with err=%d\n", __func__, __LINE__, err);
+            } else {
+                wifi_util_dbg_print(WIFI_WEBCONFIG, "%s:%d unique123 WEBCONFIG_SET: encode_subdoc SUCCESS - about to call apply_data\n", __func__, __LINE__);
+                
+                if ((data->descriptor = webconfig_data_descriptor_encoded)
+                            && (config->apply_data(doc, data)) != webconfig_error_none) {
+                    wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d Subdocument apply failed\n", __func__, __LINE__);
+                    wifi_util_dbg_print(WIFI_WEBCONFIG, "%s:%d unique123 WEBCONFIG_SET: ERROR - apply_data failed\n", __func__, __LINE__);
             err = webconfig_error_apply;
         }
     } else if ((data->descriptor & webconfig_data_descriptor_encoded) == webconfig_data_descriptor_encoded) {

@@ -20810,10 +20810,15 @@ BOOL MgtFrameRateLimit_GetParamBoolValue(ANSC_HANDLE hInsContext, char *ParamNam
 
        if (AnscEqualString(ParamName, "X_RDKCENTRAL-COM_TestParameter", TRUE)) 
     {
-        wifi_util_dbg_print(WIFI_DMCLI,"%s:%d unique123 TestParameter GET: %s\n", __func__, __LINE__, 
-                           pcfg->test_parameter ? "true" : "false");
-        *pBool = pcfg->test_parameter;
-        return TRUE;
+        if (pBool != NULL) {
+            wifi_util_dbg_print(WIFI_DMCLI,"%s:%d unique123 TestParameter GET: %s\n", __func__, __LINE__, 
+                               pcfg->test_parameter ? "true" : "false");
+            *pBool = pcfg->test_parameter;
+            return TRUE;
+        } else {
+            wifi_util_dbg_print(WIFI_DMCLI,"%s:%d unique123 TestParameter GET failed - pBool is NULL\n", __func__, __LINE__);
+            return FALSE;
+        }
     }
 
     if (AnscEqualString(ParamName, "Enable", TRUE)) {

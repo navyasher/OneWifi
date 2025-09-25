@@ -710,6 +710,8 @@ bus_error_t webconfig_get_dml_subdoc(char *event_name, raw_data_t *p_data, bus_u
     }
 
     memset(&data, 0, sizeof(webconfig_subdoc_data_t));
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d unique123 DML_SUBDOC: Starting data copy for encoding\n", __func__, __LINE__);
+    
     memcpy((unsigned char *)&data.u.decoded.radios, (unsigned char *)&mgr->radio_config,
         getNumberRadios() * sizeof(rdk_wifi_radio_t));
     memcpy((unsigned char *)&data.u.decoded.config, (unsigned char *)&mgr->global_config,
@@ -717,12 +719,18 @@ bus_error_t webconfig_get_dml_subdoc(char *event_name, raw_data_t *p_data, bus_u
     memcpy((unsigned char *)&data.u.decoded.hal_cap, (unsigned char *)&mgr->hal_cap,
         sizeof(wifi_hal_capability_t));
     data.u.decoded.num_radios = getNumberRadios();
+    
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d unique123 DML_SUBDOC: Data copy complete - about to call webconfig_encode\n", __func__, __LINE__);
+    
     // tell webconfig to encode
     if (webconfig_encode(&ctrl->webconfig, &data, webconfig_subdoc_type_dml) !=
         webconfig_error_none) {
         wifi_util_error_print(WIFI_CTRL, "%s:%d webconfig encode failed\n", __func__, __LINE__);
+        wifi_util_dbg_print(WIFI_CTRL, "%s:%d unique123 DML_SUBDOC: ERROR - webconfig_encode FAILED\n", __func__, __LINE__);
         return bus_error_general;
     }
+    
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d unique123 DML_SUBDOC: webconfig_encode SUCCESS - about to allocate memory\n", __func__, __LINE__);
 
     uint32_t str_size = strlen(data.u.encoded.raw) + 1;
     p_data->data_type = bus_data_type_string;

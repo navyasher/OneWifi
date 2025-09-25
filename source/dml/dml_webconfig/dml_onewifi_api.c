@@ -720,7 +720,10 @@ int init(webconfig_dml_t *consumer)
 
     memset(&raw_data, 0, sizeof(raw_data));
 
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Starting webconfig_dml init - about to register bus\n", __func__, __LINE__);
     bus_dmlwebconfig_register(consumer);
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Bus registration complete - about to call bus_data_get_fn\n", __func__, __LINE__);
+    
     rc = get_bus_descriptor()->bus_data_get_fn(&consumer->handle, paramNames[0], &raw_data);
     if (raw_data.data_type != bus_data_type_string) {
         wifi_util_error_print(WIFI_CTRL,
