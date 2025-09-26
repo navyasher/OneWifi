@@ -20811,7 +20811,7 @@ BOOL MgtFrameRateLimit_GetParamBoolValue(ANSC_HANDLE hInsContext, char *ParamNam
        if (AnscEqualString(ParamName, "CGTestParameter", TRUE)) 
     {
         // if (pBool != NULL) {
-            wifi_util_dbg_print(WIFI_DMCLI,"%s:%d unique123 CGTestParameter GET:\n", __func__, __LINE__, );
+            wifi_util_dbg_print(WIFI_DMCLI,"%s:%d unique123 CGTestParameter GET:\n", __func__, __LINE__);
             *pBool = false;
             return TRUE;
         // }
