@@ -20808,17 +20808,20 @@ BOOL MgtFrameRateLimit_GetParamBoolValue(ANSC_HANDLE hInsContext, char *ParamNam
         return FALSE;
     }
 
-       if (AnscEqualString(ParamName, "CGTestParameter", TRUE)) 
+    if (AnscEqualString(ParamName, "X_RDKCENTRAL-COM_TestParameter", TRUE)) 
     {
-        // if (pBool != NULL) {
-            wifi_util_dbg_print(WIFI_DMCLI,"%s:%d unique123 CGTestParameter GET:\n", __func__, __LINE__);
-            *pBool = false;
+        if (pBool != NULL) 
+        {
+            wifi_util_dbg_print(WIFI_DMCLI,"%s:%d unique123 TestParameter GET: %s\n", __func__, __LINE__, 
+                               pcfg->test_parameter ? "true" : "false");
+            *pBool = pcfg->test_parameter;
             return TRUE;
-        // }
-        //  else {
-        //     wifi_util_dbg_print(WIFI_DMCLI,"%s:%d unique123 TestParameter GET failed - pBool is NULL\n", __func__, __LINE__);
-        //     return FALSE;
-        // }
+        } 
+        else 
+        {
+            wifi_util_dbg_print(WIFI_DMCLI,"%s:%d unique123 TestParameter GET failed - pBool is NULL\n", __func__, __LINE__);
+            return FALSE;
+        }
     }
 
     if (AnscEqualString(ParamName, "Enable", TRUE)) {
@@ -20870,16 +20873,16 @@ BOOL MgtFrameRateLimit_SetParamBoolValue(ANSC_HANDLE hInsContext, char *ParamNam
         return FALSE;
     }
 
-    if (AnscEqualString(ParamName, "CGTestParameter", TRUE)) 
+    if (AnscEqualString(ParamName, "X_RDKCENTRAL-COM_TestParameter", TRUE)) 
     {
-        wifi_util_dbg_print(WIFI_DMCLI,"%s:%d:UNIQUE123 CG test_parameter set navya=%d Value = %d  \n",__func__, __LINE__,global_wifi_config->global_parameters.test_parameter,bValue);
-        // if (global_wifi_config->global_parameters.test_parameter == bValue) 
-        // {
-        //     return TRUE;
-        // }
-        // wifi_util_dbg_print(WIFI_DMCLI,"%s:%d:UNIQUE123test_parameter updating navya=%d to Value = %d  \n",__func__, __LINE__,global_wifi_config->global_parameters.test_parameter,bValue);
-        // global_wifi_config->global_parameters.test_parameter = bValue;
-        // push_global_config_dml_cache_to_one_wifidb();
+        wifi_util_dbg_print(WIFI_DMCLI,"%s:%d:UNIQUE123 test_parameter set navya=%d Value = %d  \n",__func__, __LINE__,global_wifi_config->global_parameters.test_parameter,bValue);
+        if (global_wifi_config->global_parameters.test_parameter == bValue) 
+        {
+            return TRUE;
+        }
+        wifi_util_dbg_print(WIFI_DMCLI,"%s:%d:UNIQUE123test_parameter updating navya=%d to Value = %d  \n",__func__, __LINE__,global_wifi_config->global_parameters.test_parameter,bValue);
+        global_wifi_config->global_parameters.test_parameter = bValue;
+        push_global_config_dml_cache_to_one_wifidb();
         return TRUE;
     }
 

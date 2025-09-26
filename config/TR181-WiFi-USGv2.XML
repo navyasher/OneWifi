@@ -941,7 +941,7 @@ INSTMSMT_PH2 -->
                     </functions>
                         <parameters>
                         <parameter>
-                            <name>CGTestParameter</name>
+                            <name>X_RDKCENTRAL-COM_TestParameter</name>
                             <type>boolean</type>
                             <syntax>bool</syntax>
                             <writable>true</writable>
