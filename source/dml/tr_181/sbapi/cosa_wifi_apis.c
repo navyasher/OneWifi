@@ -1038,7 +1038,6 @@ ANSC_STATUS wifiRadioChannelIsValid(UINT radioIndex, UINT inputChannel)
     UINT bandArrIndex = 0;
     BOOL isBandFound = FALSE;
     wifi_radio_operationParam_t *wifiRadioOperParam = NULL;
-    wifi_radio_operationParam_t l_pcfg;
 
     //Get the radio capability for further comparision
     wifiRadioCap = getRadioCapability(radioIndex);
@@ -1055,8 +1054,6 @@ ANSC_STATUS wifiRadioChannelIsValid(UINT radioIndex, UINT inputChannel)
         CcspWifiTrace(("RDK_LOG_ERROR, %s Input radioIndex = %d not found for wifiRadioOperParam\n", __FUNCTION__, radioIndex));
         return ANSC_STATUS_FAILURE;
     }
-    memcpy(&l_pcfg, wifiRadioOperParam, sizeof(l_pcfg));
-    wifiRadioOperParam = &l_pcfg;
 
     //Compare the Band from capability and operation
     for (bandArrIndex = 0; bandArrIndex < wifiRadioCap->numSupportedFreqBand; bandArrIndex++)

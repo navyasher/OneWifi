@@ -5874,9 +5874,15 @@ int ovsdb_get_vap_info_map(unsigned int real_index, unsigned int radio_index, wi
 
 void wifidb_print(char *format, ...)
 {
-    char buff[256 * 1024] = {0};
+    char *buff = NULL;
     va_list list;
     FILE *fpg = NULL;
+
+    buff = (char *)malloc(256 * 1024);
+    if (!buff) {
+        return;
+    }
+    memset(buff, 0, 256 * 1024);
 
     get_formatted_time(buff);
     strcat(buff, " ");
@@ -5887,11 +5893,13 @@ void wifidb_print(char *format, ...)
 
     fpg = fopen("/rdklogs/logs/wifiDb.txt", "a+");
     if (fpg == NULL) {
+        free(buff);
         return;
     }
     fputs(buff, fpg);
     fflush(fpg);
     fclose(fpg);
+    free(buff);
 }
 
 /************************************************************************************
@@ -9315,3 +9323,4 @@ int get_all_param_from_psm_and_set_into_db(void)
     return RETURN_OK;
 }
 #endif //ONEWIFI_DB_SUPPORT
+
