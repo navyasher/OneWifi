@@ -597,6 +597,7 @@ int set_managed_guest_interfaces(char *interface_name, int radio_index)
 
 bus_error_t webconfig_init_data_get_subdoc(char *event_name, raw_data_t *p_data, bus_user_data_t *user_data)
 {
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Enter\n", __func__, __LINE__);
     (void)user_data;
     webconfig_subdoc_data_t *data;
     wifi_mgr_t *mgr = (wifi_mgr_t *)get_wifimgr_obj();
@@ -608,12 +609,14 @@ bus_error_t webconfig_init_data_get_subdoc(char *event_name, raw_data_t *p_data,
     if (!ctrl->ctrl_initialized) {
         wifi_util_dbg_print(WIFI_CTRL, "%s:%d: Ctrl not initialized skip request.\n", __FUNCTION__,
             __LINE__);
+        wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (not initialized)\n", __func__, __LINE__);
         return bus_error_invalid_operation;
     }
     
     data = malloc(sizeof(webconfig_subdoc_data_t));
     if (!data) {
         wifi_util_error_print(WIFI_CTRL, "%s:%d:Failed to allocate memory\n", __FUNCTION__, __LINE__);
+        wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (malloc failed)\n", __func__, __LINE__);
         return bus_error_out_of_resources;
     }
     
@@ -626,6 +629,7 @@ bus_error_t webconfig_init_data_get_subdoc(char *event_name, raw_data_t *p_data,
                     "%s:%d: sync_retries=%d wifidb and global radio config not updated\n",
                     __FUNCTION__, __LINE__, sync_retries);
                 free(data);
+                wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (not synced)\n", __func__, __LINE__);
                 return bus_error_invalid_operation;
             }
         }
@@ -633,6 +637,7 @@ bus_error_t webconfig_init_data_get_subdoc(char *event_name, raw_data_t *p_data,
         if((ctrl->rf_status_down == true) && !is_sta_set) {
             wifi_util_info_print(WIFI_CTRL, "%s:%d: station is in configuring state\n", __FUNCTION__, __LINE__);
             free(data);
+            wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (rf_status_down)\n", __func__, __LINE__);
             return bus_error_invalid_operation;
         }
         wifi_util_info_print(WIFI_CTRL,
@@ -644,7 +649,16 @@ bus_error_t webconfig_init_data_get_subdoc(char *event_name, raw_data_t *p_data,
             }
         }
         sync_retries = MAX_ACSD_SYNC_TIME_WAIT;
+        
+        struct timeval start_time, end_time;
+        gettimeofday(&start_time, NULL);
         memset(data, 0, sizeof(webconfig_subdoc_data_t));
+        gettimeofday(&end_time, NULL);
+        long elapsed_usec = ((end_time.tv_sec - start_time.tv_sec) * 1000000) + 
+                           (end_time.tv_usec - start_time.tv_usec);
+        wifi_util_dbg_print(WIFI_CTRL, "%s:%d memset took %ld microseconds (size: %zu bytes)\n", 
+                           __func__, __LINE__, elapsed_usec, sizeof(webconfig_subdoc_data_t));
+        
         memcpy((unsigned char *)&data->u.decoded.radios, (unsigned char *)&mgr->radio_config,
             num_of_radios * sizeof(rdk_wifi_radio_t));
 	    memcpy((unsigned char *)&data->u.decoded.config, (unsigned char *)&mgr->global_config,
@@ -662,6 +676,7 @@ bus_error_t webconfig_init_data_get_subdoc(char *event_name, raw_data_t *p_data,
             wifi_util_error_print(WIFI_CTRL,"%s:%d memory allocation is failed:%d\r\n",__func__,
                 __LINE__, str_size);
             free(data);
+            wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (malloc failed 2)\n", __func__, __LINE__);
             return bus_error_out_of_resources;
         }
         strncpy((char *)p_data->raw_data.bytes, data->u.encoded.raw, str_size);
@@ -672,6 +687,7 @@ bus_error_t webconfig_init_data_get_subdoc(char *event_name, raw_data_t *p_data,
         if (check_wifi_radio_sched_timeout_active_status(ctrl) == true) {
             wifi_util_dbg_print(WIFI_CTRL, "%s wifidb and cache are not synced!\n", __FUNCTION__);
             free(data);
+            wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (not synced ext)\n", __func__, __LINE__);
             return bus_error_invalid_operation;
         }
         memset(data, 0, sizeof(webconfig_subdoc_data_t));
@@ -696,6 +712,7 @@ bus_error_t webconfig_init_data_get_subdoc(char *event_name, raw_data_t *p_data,
             wifi_util_error_print(WIFI_CTRL,"%s:%d memory allocation is failed:%d\r\n",__func__,
                 __LINE__, str_size);
             free(data);
+            wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (malloc failed 3)\n", __func__, __LINE__);
             return bus_error_out_of_resources;
         }
         strncpy((char *)p_data->raw_data.bytes, data->u.encoded.raw, str_size);
@@ -705,11 +722,13 @@ bus_error_t webconfig_init_data_get_subdoc(char *event_name, raw_data_t *p_data,
     }
 
     free(data);
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit\n", __func__, __LINE__);
     return bus_error_success;
 }
 
 bus_error_t webconfig_get_dml_subdoc(char *event_name, raw_data_t *p_data, bus_user_data_t *user_data)
 {
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Enter\n", __func__, __LINE__);
     (void)user_data;
     webconfig_subdoc_data_t *data;
     wifi_mgr_t *mgr = (wifi_mgr_t *)get_wifimgr_obj();
@@ -739,6 +758,7 @@ bus_error_t webconfig_get_dml_subdoc(char *event_name, raw_data_t *p_data, bus_u
             wifi_util_error_print(WIFI_CTRL,
                 "%s:%d FATAL Error al_mac:%s or colocated_mode:%d incorrect\n", __func__, __LINE__,
                 to_mac_str(wifi_prop->al_1905_mac, mac_str), wifi_prop->colocated_mode);
+            wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (error - invalid al_mac or colocated_mode)\n", __func__, __LINE__);
             return bus_error_access_not_allowed;
         }
         /* check 2 */
@@ -749,6 +769,7 @@ bus_error_t webconfig_get_dml_subdoc(char *event_name, raw_data_t *p_data, bus_u
                 wifi_util_error_print(WIFI_CTRL,
                     "%s:%d FATAL Error Interface not found for al_mac:%s\n", __func__, __LINE__,
                     to_mac_str(wifi_prop->al_1905_mac, mac_str));
+                wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (error - interface not found)\n", __func__, __LINE__);
                 return bus_error_access_not_allowed;
             }
             vap_index = convert_ifname_to_vap_index(wifi_prop, ifname);
@@ -758,6 +779,7 @@ bus_error_t webconfig_get_dml_subdoc(char *event_name, raw_data_t *p_data, bus_u
                     wifi_util_error_print(WIFI_CTRL,
                         "%s:%d Error backhaul interface:%s(Idx: %d, Ptr: %p) is not sta interface",
                         __func__, __LINE__, ifname, vap_index, sta_info);
+                    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (error - not sta interface)\n", __func__, __LINE__);
                     return bus_error_access_not_allowed;
                 }
             } else {
@@ -767,6 +789,7 @@ bus_error_t webconfig_get_dml_subdoc(char *event_name, raw_data_t *p_data, bus_u
                     wifi_util_error_print(WIFI_CTRL,
                         "%s:%d Error ifname:%s is not ethernet or loopback interface.\n", __func__,
                         __LINE__, ifname);
+                    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (error - invalid interface)\n", __func__, __LINE__);
                     return bus_error_access_not_allowed;
                 }
             }
@@ -776,6 +799,7 @@ bus_error_t webconfig_get_dml_subdoc(char *event_name, raw_data_t *p_data, bus_u
     data = malloc(sizeof(webconfig_subdoc_data_t));
     if (!data) {
         wifi_util_error_print(WIFI_CTRL, "%s:%d:Failed to allocate memory\n", __FUNCTION__, __LINE__);
+        wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (malloc failed)\n", __func__, __LINE__);
         return bus_error_out_of_resources;
     }
 
@@ -791,6 +815,7 @@ bus_error_t webconfig_get_dml_subdoc(char *event_name, raw_data_t *p_data, bus_u
     if (webconfig_encode(&ctrl->webconfig, data, webconfig_subdoc_type_dml) !=
         webconfig_error_none) {
         wifi_util_error_print(WIFI_CTRL, "%s:%d webconfig encode failed\n", __func__, __LINE__);
+        wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (error - webconfig encode failed)\n", __func__, __LINE__);
         free(data);
         return bus_error_general;
     }
@@ -801,14 +826,16 @@ bus_error_t webconfig_get_dml_subdoc(char *event_name, raw_data_t *p_data, bus_u
     if (p_data->raw_data.bytes == NULL) {
         wifi_util_error_print(WIFI_CTRL, "%s:%d memory allocation is failed:%d\r\n", __func__,
             __LINE__, str_size);
+        wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (malloc failed 3)\n", __func__, __LINE__);
         free(data);
         return bus_error_out_of_resources;
     }
-    strncpy(p_data->raw_data.bytes, data->u.encoded.raw, str_size);
+    strncpy((char *)p_data->raw_data.bytes, data->u.encoded.raw, str_size);
     p_data->raw_data_len = str_size;
 
     webconfig_data_free(data);
     free(data);
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit\n", __func__, __LINE__);
     return bus_error_success;
 }
 

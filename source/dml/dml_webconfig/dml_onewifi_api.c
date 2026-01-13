@@ -470,6 +470,7 @@ void dml_cache_update(webconfig_subdoc_data_t *data)
 
 void set_webconfig_dml_data(char *eventName, raw_data_t *p_data, void *userData)
 {
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Enter\n", __func__, __LINE__);
     (void)userData;
     char *pTmp = NULL;
     webconfig_subdoc_data_t *data;
@@ -478,12 +479,14 @@ void set_webconfig_dml_data(char *eventName, raw_data_t *p_data, void *userData)
     pTmp = p_data->raw_data.bytes;
     if ((p_data->data_type != bus_data_type_string) || (pTmp == NULL)) {
         wifi_util_error_print(WIFI_CTRL, "%s:%d:[%s]wrong bus object data:%02x\r\n", __func__, __LINE__, eventName, p_data->data_type);
+        wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit (error)\n", __func__, __LINE__);
         return;
     }
 
     data = malloc(sizeof(webconfig_subdoc_data_t));
     if (!data) {
         wifi_util_error_print(WIFI_DMCLI, "%s:%d:Failed to allocate memory\n", __func__, __LINE__);
+        wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit (error)\n", __func__, __LINE__);
         return;
     }
 
@@ -508,6 +511,7 @@ void set_webconfig_dml_data(char *eventName, raw_data_t *p_data, void *userData)
     } else {
         wifi_util_error_print(WIFI_DMCLI, "%s %d webconfig_decode fail \n", __FUNCTION__, __LINE__);
         free(data);
+        wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit (error)\n", __func__, __LINE__);
         return;
     }
 
@@ -515,6 +519,7 @@ void set_webconfig_dml_data(char *eventName, raw_data_t *p_data, void *userData)
 
     webconfig_data_free(data);
     free(data);
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit\n", __func__, __LINE__);
     return;
 }
 
@@ -1002,17 +1007,20 @@ wifi_vap_security_t * get_dml_cache_bss_security_parameter(uint8_t vapIndex)
 
 int get_radioIndex_from_vapIndex(unsigned int vap_index, unsigned int *radio_index)
 {
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Enter vap_index=%u\n", __func__, __LINE__, vap_index);
     unsigned int radioIndex = 0;
     unsigned int vapIndex = 0;
 
     if (radio_index == NULL) {
         wifi_util_error_print(WIFI_DMCLI,"%s:%d: Input arguements are NULL %d \n",__func__, __LINE__, vap_index);
+        wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit (error)\n", __func__, __LINE__);
         return RETURN_ERR;
     }
 
     webconfig_dml_t* webConfigDml = get_webconfig_dml();
     if (webConfigDml == NULL){
         wifi_util_error_print(WIFI_DMCLI,"%s:%d: get_webconfig_dml is NULL  \n",__func__, __LINE__);
+        wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit (error)\n", __func__, __LINE__);
         return RETURN_ERR;
     }
 
@@ -1020,23 +1028,27 @@ int get_radioIndex_from_vapIndex(unsigned int vap_index, unsigned int *radio_ind
         for (vapIndex = 0; vapIndex < MAX_NUM_VAP_PER_RADIO; vapIndex++){
             if (webConfigDml->radios[radioIndex].vaps.rdk_vap_array[vapIndex].vap_index == vap_index){
                 *radio_index = radioIndex;
+                wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit radio_index=%u\n", __func__, __LINE__, *radio_index);
                 return RETURN_OK;
             }
         }
     }
 
     wifi_util_error_print(WIFI_DMCLI,"%s:%d: vap index not found it  %d \n",__func__, __LINE__, vap_index);
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit (error)\n", __func__, __LINE__);
     return RETURN_ERR;
 }
 
 int push_global_config_dml_cache_to_one_wifidb()
 {
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Enter\n", __func__, __LINE__);
     wifi_util_dbg_print(WIFI_DMCLI, "%s:  Need to implement \n", __FUNCTION__);
     webconfig_subdoc_data_t *data;
     char *str = NULL;
     data = malloc(sizeof(webconfig_subdoc_data_t));
     if (!data) {
         wifi_util_error_print(WIFI_DMCLI, "%s:%d:Failed to allocate memory\n", __func__, __LINE__);
+        wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit (error)\n", __func__, __LINE__);
         return RETURN_ERR;
     }
     memset(data, 0, sizeof(webconfig_subdoc_data_t));
@@ -1058,6 +1070,7 @@ int push_global_config_dml_cache_to_one_wifidb()
     webconfig_data_free(data);
     free(data);
 
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit\n", __func__, __LINE__);
     return RETURN_OK;
 }
 
@@ -1081,29 +1094,34 @@ int push_managed_wifi_disable_to_ctrl_queue()
 
 int push_kick_assoc_to_ctrl_queue(int vap_index) 
 {
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Enter vap_index=%d\n", __func__, __LINE__, vap_index);
     char tmp_str[120];
     memset(tmp_str, 0, sizeof(tmp_str));
     wifi_util_info_print(WIFI_DMCLI, "%s:%d Pushing kick assoc to ctrl queue for vap_index %d\n", __func__, __LINE__, vap_index);
     snprintf(tmp_str, sizeof(tmp_str), "%d-ff:ff:ff:ff:ff:ff-0", vap_index);
     push_event_to_ctrl_queue(tmp_str, (strlen(tmp_str) + 1), wifi_event_type_command, wifi_event_type_command_kick_assoc_devices, NULL);
 
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit\n", __func__, __LINE__);
     return RETURN_OK;
 }
 
 int push_radio_dml_cache_to_one_wifidb()
 {
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Enter\n", __func__, __LINE__);
     webconfig_subdoc_data_t *data;
     char *str = NULL;
 
     if(is_radio_config_changed == FALSE)
     {
         wifi_util_info_print(WIFI_DMCLI, "%s: No Radio DML Modified Return success  \n", __FUNCTION__);
+        wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit (no changes)\n", __func__, __LINE__);
         return RETURN_OK;
     }
 
     data = malloc(sizeof(webconfig_subdoc_data_t));
     if (!data) {
         wifi_util_error_print(WIFI_DMCLI, "%s:%d:Failed to allocate memory\n", __func__, __LINE__);
+        wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit (error)\n", __func__, __LINE__);
         return RETURN_ERR;
     }
     memset(data, 0, sizeof(webconfig_subdoc_data_t));
@@ -1127,17 +1145,20 @@ int push_radio_dml_cache_to_one_wifidb()
     webconfig_data_free(data);
     free(data);
 
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit\n", __func__, __LINE__);
     return RETURN_OK;
 }
 
 int push_acl_list_dml_cache_to_one_wifidb(wifi_vap_info_t *vap_info)
 {
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Enter\n", __func__, __LINE__);
     webconfig_subdoc_data_t *data;
     char *str = NULL;
 
     data = malloc(sizeof(webconfig_subdoc_data_t));
     if (!data) {
         wifi_util_error_print(WIFI_DMCLI, "%s:%d:Failed to allocate memory\n", __func__, __LINE__);
+        wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit (error)\n", __func__, __LINE__);
         return RETURN_ERR;
     }
     memset(data, 0, sizeof(webconfig_subdoc_data_t));
@@ -1159,6 +1180,7 @@ int push_acl_list_dml_cache_to_one_wifidb(wifi_vap_info_t *vap_info)
     webconfig_data_free(data);
     free(data);
 
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit\n", __func__, __LINE__);
     return RETURN_OK;
 }
 
@@ -1300,10 +1322,12 @@ int push_rfc_dml_cache_to_one_wifidb(bool rfc_value,wifi_event_subtype_t rfc)
 
 int push_vap_dml_cache_to_one_wifidb()
 {
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Enter\n", __func__, __LINE__);
 
     if(is_vap_config_changed == FALSE && is_vap_cac_config_changed == FALSE)
     {
         wifi_util_info_print(WIFI_DMCLI, "%s: No vap DML Modified Return success  \n", __FUNCTION__);
+        wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit (no changes)\n", __func__, __LINE__);
         return RETURN_OK;
     }
 
@@ -1343,11 +1367,13 @@ int push_vap_dml_cache_to_one_wifidb()
     wifi_util_info_print(WIFI_DMCLI, "%s:  VAP DML cache pushed to queue \n", __FUNCTION__);
     is_vap_config_changed = FALSE;
     is_vap_cac_config_changed = FALSE;
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit\n", __func__, __LINE__);
     return RETURN_OK;
 }
 
 int push_blaster_config_dml_to_ctrl_queue()
 {
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Enter\n", __func__, __LINE__);
     webconfig_subdoc_data_t *data;
     char *str = NULL;
     int ret = 0;
@@ -1357,6 +1383,7 @@ int push_blaster_config_dml_to_ctrl_queue()
     if (ret != bus_error_success) {
         wifi_util_error_print(WIFI_DMCLI, "%s:%d bus: bus_open_fn open failed for component:%s, ret:%d\n",
 	 __func__, __LINE__, "trace-blaster", ret);
+        wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit (error)\n", __func__, __LINE__);
         return RETURN_ERR;
     }
 
@@ -1370,6 +1397,7 @@ int push_blaster_config_dml_to_ctrl_queue()
         telemetry_buf = malloc(sizeof(char)*1024);
         if (telemetry_buf == NULL) {
             wifi_util_error_print(WIFI_DMCLI,"%s:%d telemetry_buf allocation failed\r\n", __func__, __LINE__);
+            wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit (error)\n", __func__, __LINE__);
             return RETURN_ERR;
         }
         memset(telemetry_buf, 0, sizeof(char)*1024);
@@ -1383,6 +1411,7 @@ int push_blaster_config_dml_to_ctrl_queue()
     data = malloc(sizeof(webconfig_subdoc_data_t));
     if (!data) {
         wifi_util_error_print(WIFI_DMCLI, "%s:%d:Failed to allocate memory\n", __func__, __LINE__);
+        wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit (error)\n", __func__, __LINE__);
         return RETURN_ERR;
     }
     memset(data, 0, sizeof(webconfig_subdoc_data_t));
@@ -1404,6 +1433,7 @@ int push_blaster_config_dml_to_ctrl_queue()
     webconfig_data_free(data);
     free(data);
 
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit\n", __func__, __LINE__);
     return RETURN_OK;
 }
 
@@ -1428,12 +1458,14 @@ instant_measurement_config_t* get_dml_harvester(void)
 
 int push_harvester_dml_cache_to_one_wifidb()
 {
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Enter\n", __func__, __LINE__);
     if(webconfig_dml.harvester.b_inst_client_enabled == true){
         webconfig_subdoc_data_t *data;
         char *str = NULL;
         data = malloc(sizeof(webconfig_subdoc_data_t));
         if (!data) {
             wifi_util_error_print(WIFI_DMCLI, "%s:%d:Failed to allocate memory\n", __func__, __LINE__);
+            wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit (error)\n", __func__, __LINE__);
             return RETURN_ERR;
         }
         memset(data, 0, sizeof(webconfig_subdoc_data_t));
@@ -1463,6 +1495,7 @@ int push_harvester_dml_cache_to_one_wifidb()
         webconfig_data_free(data);
         free(data);
     }
+    wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Exit\n", __func__, __LINE__);
     return RETURN_OK;
 }
 

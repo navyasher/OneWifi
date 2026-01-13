@@ -942,6 +942,7 @@ vap_stats_flag_changed(unsigned int ap_index, client_stats_enable_t *flag)
  */
 int wifi_stats_flag_change(int ap_index, bool enable, int type)
 {
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Enter\n", __func__, __LINE__);
     wifi_monitor_data_t *data;
 
     data = malloc(sizeof(wifi_monitor_data_t));
@@ -964,6 +965,7 @@ int wifi_stats_flag_change(int ap_index, bool enable, int type)
     push_event_to_monitor_queue(data, wifi_event_monitor_stats_flag_change, NULL);
 
     free(data);
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit\n", __func__, __LINE__);
     return 0;
 }
 
@@ -975,6 +977,7 @@ int wifi_stats_flag_change(int ap_index, bool enable, int type)
  */
 int radio_stats_flag_change(int radio_index, bool enable)
 {
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Enter\n", __func__, __LINE__);
     wifi_monitor_data_t *data;
 
     data = malloc(sizeof(wifi_monitor_data_t));
@@ -995,6 +998,7 @@ int radio_stats_flag_change(int radio_index, bool enable)
     push_event_to_monitor_queue(data, wifi_event_monitor_radio_stats_flag_change, NULL);
 
     free(data);
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit\n", __func__, __LINE__);
     return 0;
 }
 
@@ -1006,6 +1010,7 @@ int radio_stats_flag_change(int radio_index, bool enable)
  */
 int vap_stats_flag_change(int ap_index, bool enable)
 {
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Enter\n", __func__, __LINE__);
     wifi_monitor_data_t *data;
 
     data = malloc(sizeof(wifi_monitor_data_t));
@@ -1025,6 +1030,7 @@ int vap_stats_flag_change(int ap_index, bool enable)
     push_event_to_monitor_queue(data, wifi_event_monitor_vap_stats_flag_change, NULL);
 
     free(data);
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit\n", __func__, __LINE__);
     return 0;
 }
 
@@ -2525,12 +2531,15 @@ static int clientdiag_sheduler_enable(int ap_index)
 
 int diagdata_set_interval(int interval, unsigned int ap_idx)
 {
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Enter\n", __func__, __LINE__);
     wifi_monitor_data_t *data;
     unsigned int vap_array_index;
     int ret = RETURN_ERR;
 
     if(ap_idx >= MAX_VAP) {
         wifi_util_error_print(WIFI_MON, "%s: ap_idx %d not valid\n",__func__, ap_idx);
+        wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (error - invalid ap_idx)\n", __func__, __LINE__);
+        return RETURN_ERR;
     }
 
     getVAPArrayIndexFromVAPIndex(ap_idx, &vap_array_index);
@@ -2544,6 +2553,7 @@ int diagdata_set_interval(int interval, unsigned int ap_idx)
     if (!data) {
         wifi_util_error_print(WIFI_MON, "%s:%d: Failed to allocate memory for wifi_monitor_data_t\n",
                 __func__, __LINE__);
+        wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (malloc failed)\n", __func__, __LINE__);
         return RETURN_ERR;
     }
 
@@ -2555,8 +2565,10 @@ int diagdata_set_interval(int interval, unsigned int ap_idx)
     free(data);
     if (ret == RETURN_ERR) {
         wifi_util_error_print(WIFI_MON, "%s:%d Error in sending request to monitor queue\n", __func__, __LINE__);
+        wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (error - monitor queue failed)\n", __func__, __LINE__);
         return RETURN_ERR;
     }
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit\n", __func__, __LINE__);
     return RETURN_OK;
 }
 

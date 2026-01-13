@@ -158,7 +158,9 @@ void webconfig_init_subdoc_data(webconfig_subdoc_data_t *data)
 }
 
 int update_vap_params_to_hal_and_db(wifi_vap_info_t *vap, bool enable_or_disable) {
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Enter\n", __func__, __LINE__);
     if (!vap) {
+        wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (error - vap is NULL)\n", __func__, __LINE__);
         return RETURN_ERR;
     }
     wifi_ctrl_t *ctrl = (wifi_ctrl_t *)get_wifictrl_obj();
@@ -169,6 +171,7 @@ int update_vap_params_to_hal_and_db(wifi_vap_info_t *vap, bool enable_or_disable
     if (!rdk_vap_info) {
         wifi_util_error_print(WIFI_CTRL, "%s:%d Failed to get rdk vap info for index %d\n",
                               __func__, __LINE__, vap->vap_index);
+        wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (error - failed to get rdk vap info)\n", __func__, __LINE__);
         return RETURN_ERR;
     }
 
@@ -176,10 +179,17 @@ int update_vap_params_to_hal_and_db(wifi_vap_info_t *vap, bool enable_or_disable
     if (!tmp_vap_map) {
         wifi_util_error_print(WIFI_CTRL, "%s:%d Memory allocation failure for tmp_vap_map\n",
                               __func__, __LINE__);
+        wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (malloc failed)\n", __func__, __LINE__);
         return RETURN_ERR;
     }
 
+    struct timespec start, end;
+    clock_gettime(CLOCK_MONOTONIC, &start);
     memset((unsigned char *)tmp_vap_map, 0, sizeof(wifi_vap_info_map_t));
+    clock_gettime(CLOCK_MONOTONIC, &end);
+    double elapsed_time = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d memset took %f seconds\n", __func__, __LINE__, elapsed_time);
+
     tmp_vap_map->num_vaps = 1;
     memcpy(&tmp_vap_map->vap_array[0], vap, sizeof(wifi_vap_info_t));
 
@@ -204,6 +214,7 @@ free_data:
         tmp_vap_map = NULL;
     }
 
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit\n", __func__, __LINE__);
     return ret;
 }
 
@@ -303,6 +314,7 @@ int webconfig_send_dml_subdoc_status(wifi_ctrl_t *ctrl)
 
 int  webconfig_free_vap_object_diff_assoc_client_entries(webconfig_subdoc_data_t *data)
 {
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Enter\n", __func__, __LINE__);
     unsigned int i=0, j=0;
     rdk_wifi_radio_t *radio;
     rdk_wifi_vap_info_t *rdk_vap_info, *tmp_rdk_vap_info;
@@ -313,6 +325,7 @@ int  webconfig_free_vap_object_diff_assoc_client_entries(webconfig_subdoc_data_t
     decoded_params = &data->u.decoded;
     if (decoded_params == NULL) {
         wifi_util_error_print(WIFI_WEBCONFIG,"%s:%d: decoded_params is NULL\n", __func__, __LINE__);
+        wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (error - decoded_params is NULL)\n", __func__, __LINE__);
         return RETURN_ERR;
     }
 
@@ -322,6 +335,7 @@ int  webconfig_free_vap_object_diff_assoc_client_entries(webconfig_subdoc_data_t
             rdk_vap_info = &decoded_params->radios[i].vaps.rdk_vap_array[j];
             if (rdk_vap_info == NULL) {
                 wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: rdk_vap_info is null", __func__, __LINE__);
+                wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (error - rdk_vap_info is NULL)\n", __func__, __LINE__);
                 return RETURN_ERR;
             }
             pthread_mutex_lock(rdk_vap_info->associated_devices_lock);
@@ -343,12 +357,14 @@ int  webconfig_free_vap_object_diff_assoc_client_entries(webconfig_subdoc_data_t
             if (tmp_rdk_vap_info == NULL) {
                 pthread_mutex_unlock(rdk_vap_info->associated_devices_lock);
                 wifi_util_error_print(WIFI_CTRL,"%s:%d NULL rdk_vap_info pointer\n", __func__, __LINE__);
+                wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit (error - tmp_rdk_vap_info is NULL)\n", __func__, __LINE__);
                 return RETURN_ERR;
             }
             tmp_rdk_vap_info->associated_devices_diff_map = NULL;
             pthread_mutex_unlock(tmp_rdk_vap_info->associated_devices_lock);
         }
     }
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit\n", __func__, __LINE__);
     return RETURN_OK;
 }
 
@@ -2197,7 +2213,7 @@ int webconfig_hal_radio_apply(wifi_ctrl_t *ctrl, webconfig_subdoc_decoded_data_t
             is_changed = 1;
             if (IS_CHANGED(mgr_radio_data->oper.enable,radio_data->oper.enable) &&
                 is_6g_supported_device(&mgr->hal_cap.wifi_prop)) {
-                wifi_util_info_print(WIFI_MGR,"Radio enable field is modified from mgr_radio_data->oper->enable=%d and radio_data->oper->enable=%d\n",
+                wifi_util_info_print(WIFI_MGR, "Radio enable field is modified from mgr_radio_data->oper->enable=%d and radio_data->oper->enable=%d\n",
                     mgr_radio_data->oper.enable,radio_data->oper.enable);
                 is_radio_6g_modified =  true;
             }
@@ -2207,7 +2223,7 @@ int webconfig_hal_radio_apply(wifi_ctrl_t *ctrl, webconfig_subdoc_decoded_data_t
             print_wifi_hal_radio_data(WIFI_WEBCONFIG, "old", i, &mgr_radio_data->oper);
             print_wifi_hal_radio_data(WIFI_WEBCONFIG, "New", i, &radio_data->oper);
 
-// Optimizer will try to change, channel on current STA along with parent change, So it shouldn't skip for pods. 
+            // Optimizer will try to change, channel on current STA along with parent change, So it shouldn't skip for pods. 
             if (ctrl->network_mode == rdk_dev_mode_type_ext) {
                 vap_svc_t *ext_svc;
                 ext_svc = get_svc_by_type(ctrl, vap_svc_type_mesh_ext);
@@ -3153,8 +3169,8 @@ void start_station_vaps(bool rf_status)
                         .u.sta_info.security.u.radius.identity);
 
                 memset(&data->u.decoded.radios[radio_index]
-                           .vaps.vap_map.vap_array[vap_array_index]
-                           .u.sta_info.security.u.radius.key,
+                       .vaps.vap_map.vap_array[vap_array_index]
+                       .u.sta_info.security.u.radius.key,
                     0,
                     sizeof(data->u.decoded.radios[radio_index]
                             .vaps.vap_map.vap_array[vap_array_index]
