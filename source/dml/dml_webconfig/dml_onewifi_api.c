@@ -578,6 +578,7 @@ void get_associated_devices_data(unsigned int radio_index)
     }
     data = (webconfig_subdoc_data_t *)malloc(sizeof(webconfig_subdoc_data_t));
     if (data == NULL) {
+        free(str);
         wifi_util_error_print(WIFI_DMCLI,"%s:%d: Failed to allocate memory\n", __func__, __LINE__);
         return;
     }
