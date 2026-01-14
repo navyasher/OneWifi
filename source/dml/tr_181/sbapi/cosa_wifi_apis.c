@@ -1039,6 +1039,7 @@ ANSC_STATUS wifiRadioChannelIsValid(UINT radioIndex, UINT inputChannel)
     BOOL isBandFound = FALSE;
     wifi_radio_operationParam_t *wifiRadioOperParam = NULL;
 
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d: Enter\n", __func__, __LINE__);
     //Get the radio capability for further comparision
     wifiRadioCap = getRadioCapability(radioIndex);
     if (wifiRadioCap == NULL)

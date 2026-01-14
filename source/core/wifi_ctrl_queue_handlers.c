@@ -3511,7 +3511,7 @@ int wifidb_vap_status_update(bool status)
     int count;
     wifi_vap_info_t *vap_config = NULL;
     rdk_wifi_vap_info_t rdk_vap_config;
-    
+    wifi_util_error_print(WIFI_CTRL, "%s:%d: NTesting Entry\n", __func__, __LINE__);
     vap_config = (wifi_vap_info_t *)malloc(sizeof(wifi_vap_info_t));
     if (!vap_config) {
         wifi_util_error_print(WIFI_CTRL, "%s:%d: malloc failed\n", __func__, __LINE__);

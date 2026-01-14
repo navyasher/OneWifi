@@ -603,6 +603,7 @@ WifiClient_ActiveMeasurements_SetParamBoolValue
 {
     UNREFERENCED_PARAMETER(hInsContext);
 
+    AnscTraceWarning(("%s : Enter Ntesting start\n", __func__));
     /* check the parameter name and set the corresponding value */
     active_msmt_t *pcfg = NULL;
     bool active_measurement_rfc =  false;
@@ -627,6 +628,7 @@ WifiClient_ActiveMeasurements_SetParamBoolValue
     }
 
     if ( AnscEqualString(ParamName, "Enable", TRUE)) {
+        AnscTraceWarning(("%s : Enter Ntesting\n", __func__));
         pcfg->ActiveMsmtEnable = bValue;
         push_blaster_config_dml_to_ctrl_queue();
         return TRUE;

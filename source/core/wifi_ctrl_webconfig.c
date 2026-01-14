@@ -220,6 +220,7 @@ free_data:
 
 int webconfig_send_wifi_config_status(wifi_ctrl_t *ctrl)
 {
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Enter\n", __FUNCTION__, __LINE__);
     webconfig_subdoc_data_t *data;
     wifi_mgr_t *mgr = get_wifimgr_obj();
 
@@ -241,11 +242,13 @@ int webconfig_send_wifi_config_status(wifi_ctrl_t *ctrl)
     }
 
     free(data);
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit\n", __FUNCTION__, __LINE__);
     return RETURN_OK;
 }
 
 int webconfig_send_radio_subdoc_status(wifi_ctrl_t *ctrl, webconfig_subdoc_type_t type)
 {
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Enter\n", __FUNCTION__, __LINE__);
     webconfig_subdoc_data_t *data;
 
     data = malloc(sizeof(webconfig_subdoc_data_t));
@@ -264,11 +267,13 @@ int webconfig_send_radio_subdoc_status(wifi_ctrl_t *ctrl, webconfig_subdoc_type_
     }
 
     free(data);
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit\n", __FUNCTION__, __LINE__);
     return RETURN_OK;
 }
 
 int webconfig_send_vap_subdoc_status(wifi_ctrl_t *ctrl, webconfig_subdoc_type_t type)
 {
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Enter\n", __FUNCTION__, __LINE__);
     webconfig_subdoc_data_t *data;
 
     data = malloc(sizeof(webconfig_subdoc_data_t));
@@ -287,11 +292,13 @@ int webconfig_send_vap_subdoc_status(wifi_ctrl_t *ctrl, webconfig_subdoc_type_t 
     }
 
     free(data);
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit\n", __FUNCTION__, __LINE__);
     return RETURN_OK;
 }
 
 int webconfig_send_dml_subdoc_status(wifi_ctrl_t *ctrl)
 {
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Enter\n", __FUNCTION__, __LINE__);
     webconfig_subdoc_data_t *data;
 
     data = malloc(sizeof(webconfig_subdoc_data_t));
@@ -372,6 +379,7 @@ int webconfig_send_associate_status(wifi_ctrl_t *ctrl)
 {
     webconfig_subdoc_data_t *data;
 
+    wifi_util_error_print(WIFI_CTRL, "%s:%d:NTesting\n", __FUNCTION__, __LINE__);
     data = malloc(sizeof(webconfig_subdoc_data_t));
     if (!data) {
         wifi_util_error_print(WIFI_CTRL, "%s:%d: Failed to allocate memory for webconfig_subdoc_data_t\n",
@@ -394,7 +402,7 @@ int webconfig_send_associate_status(wifi_ctrl_t *ctrl)
 int webconfig_send_full_associate_status(wifi_ctrl_t *ctrl)
 {
     webconfig_subdoc_data_t *data;
-
+    wifi_util_error_print(WIFI_CTRL, "%s:%d: NTesting \n", __FUNCTION__, __LINE__);
     data = malloc(sizeof(webconfig_subdoc_data_t));
     if (!data) {
         wifi_util_error_print(WIFI_CTRL, "%s:%d: Failed to allocate memory for webconfig_subdoc_data_t\n",
@@ -418,6 +426,7 @@ int webconfig_send_full_associate_status(wifi_ctrl_t *ctrl)
 /* This function is responsible for encoding the data and trigger bus call */
 int webconfig_send_blaster_status(wifi_ctrl_t *ctrl)
 {
+    wifi_util_error_print(WIFI_CTRL, "%s:%d NTesting entry\n", __func__, __LINE__);
     webconfig_subdoc_data_t *data;
     wifi_mgr_t *mgr = get_wifimgr_obj();
 
@@ -443,11 +452,13 @@ int webconfig_send_blaster_status(wifi_ctrl_t *ctrl)
     }
 
     free(data);
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit\n", __FUNCTION__, __LINE__);
     return RETURN_OK;
 }
 
 int webconfig_send_steering_clients_status(wifi_ctrl_t *ctrl)
 {
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Enter\n", __FUNCTION__, __LINE__);
     webconfig_subdoc_data_t *data;
 
     data = malloc(sizeof(webconfig_subdoc_data_t));
@@ -466,11 +477,13 @@ int webconfig_send_steering_clients_status(wifi_ctrl_t *ctrl)
     }
 
     free(data);
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit\n", __FUNCTION__, __LINE__);
     return RETURN_OK;
 }
 
 int webconfig_send_multivap_subdoc_status(wifi_ctrl_t *ctrl, webconfig_subdoc_type_t type)
 {
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Enter\n", __FUNCTION__, __LINE__);
     webconfig_subdoc_data_t *data;
 
     data = malloc(sizeof(webconfig_subdoc_data_t));
@@ -490,6 +503,7 @@ int webconfig_send_multivap_subdoc_status(wifi_ctrl_t *ctrl, webconfig_subdoc_ty
     }
     
     free(data);
+    wifi_util_dbg_print(WIFI_CTRL, "%s:%d Exit\n", __FUNCTION__, __LINE__);
     return RETURN_OK;
 }
 
