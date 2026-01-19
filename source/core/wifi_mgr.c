@@ -24,6 +24,8 @@
 #include <ev.h>
 #include <sys/time.h>
 #include <assert.h>
+#include <sys/sysinfo.h>
+#include <time.h>
 #include "const.h"
 #include "wifi_data_plane.h"
 #include "wifi_monitor.h"
@@ -41,6 +43,25 @@
 
 wifi_mgr_t g_wifi_mgr;
 wifi_misc_t g_misc;
+
+void print_cpu_and_clock_details() {
+    struct sysinfo sys_info;
+    if (sysinfo(&sys_info) == 0) {
+        wifi_util_info_print(WIFI_MGR, "System Uptime: %ld seconds\n", sys_info.uptime);
+        wifi_util_info_print(WIFI_MGR, "Total RAM: %lu MB\n", sys_info.totalram / (1024 * 1024));
+        wifi_util_info_print(WIFI_MGR, "Free RAM: %lu MB\n", sys_info.freeram / (1024 * 1024));
+        wifi_util_info_print(WIFI_MGR, "Number of processes: %d\n", sys_info.procs);
+    } else {
+        wifi_util_error_print(WIFI_MGR, "Failed to get system info\n");
+    }
+
+    clock_t clock_time = clock();
+    if (clock_time != -1) {
+        wifi_util_info_print(WIFI_MGR, "CPU clock time used: %ld clock ticks\n", clock_time);
+    } else {
+        wifi_util_error_print(WIFI_MGR, "Failed to get CPU clock time\n");
+    }
+}
 
 wifi_misc_t *get_wifimisc_obj(void)
 {
@@ -374,6 +395,9 @@ int main(int argc, char *argv[])
 {
     bool run_daemon = true;
     int  idx = 0;
+
+    // Print CPU and clock details at startup
+    print_cpu_and_clock_details();
 
     for (idx = 1; idx < argc; idx++) {
         if (strcmp(argv[idx], "-c" ) == 0) {
