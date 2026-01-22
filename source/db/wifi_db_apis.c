@@ -5532,7 +5532,7 @@ int rdk_wifi_SetRapidReconnectThresholdValue(int wlanIndex, int rapidReconnThres
     int ret = RETURN_OK;
     wifi_vap_info_t *vap_map = NULL;
     rdk_wifi_vap_info_t rdk_vap_info;
-    
+    rdk_wifi_dbg_print(1, "Enter %s\n", __FUNCTION__);
     vap_map = (wifi_vap_info_t *)malloc(sizeof(wifi_vap_info_t));
     if (!vap_map) {
         rdk_wifi_dbg_print(1, "Failed to allocate memory %s\n", __FUNCTION__);
@@ -5555,6 +5555,7 @@ int rdk_wifi_GetRapidReconnectThresholdValue(int wlanIndex, int *rapidReconnThre
     wifi_vap_info_t *vap_map = NULL;
     rdk_wifi_vap_info_t rdk_vap_info;
     
+    rdk_wifi_dbg_print(1, "Enter %s \n", __FUNCTION__);
     vap_map = (wifi_vap_info_t *)malloc(sizeof(wifi_vap_info_t));
     if (!vap_map) {
         rdk_wifi_dbg_print(1, "Failed to allocate memory %s\n", __FUNCTION__);
@@ -5583,6 +5584,7 @@ int rdk_wifi_SetRapidReconnectEnable(int wlanIndex, bool reconnectCountEnable)
     wifi_vap_info_t *vap_map = NULL;
     rdk_wifi_vap_info_t rdk_vap_info;
     
+    rdk_wifi_dbg_print(1, "Enter %s \n", __FUNCTION__);
     vap_map = (wifi_vap_info_t *)malloc(sizeof(wifi_vap_info_t));
     if (!vap_map) {
         rdk_wifi_dbg_print(1, "Failed to allocate memory %s\n", __FUNCTION__);
@@ -5604,7 +5606,7 @@ int rdk_wifi_GetRapidReconnectEnable(int wlanIndex, bool *reconnectCountEnable)
     int ret = RETURN_OK;
     wifi_vap_info_t *vap_map = NULL;
     rdk_wifi_vap_info_t rdk_vap_info;
-    
+    rdk_wifi_dbg_print(1, "Enter %s\n", __FUNCTION__);
     vap_map = (wifi_vap_info_t *)malloc(sizeof(wifi_vap_info_t));
     if (!vap_map) {
         rdk_wifi_dbg_print(1, "Failed to allocate memory %s\n", __FUNCTION__);
@@ -5633,6 +5635,7 @@ int rdk_wifi_SetNeighborReportActivated(int wlanIndex, bool bNeighborReportActiv
     wifi_vap_info_t *vap_map = NULL;
     rdk_wifi_vap_info_t rdk_vap_info;
     
+    rdk_wifi_dbg_print(1, "Enter %s\n", __FUNCTION__);
     vap_map = (wifi_vap_info_t *)malloc(sizeof(wifi_vap_info_t));
     if (!vap_map) {
         rdk_wifi_dbg_print(1, "Failed to allocate memory %s\n", __FUNCTION__);
@@ -5655,6 +5658,7 @@ int rdk_wifi_GetNeighborReportActivated(int wlanIndex, bool *bNeighborReportActi
     wifi_vap_info_t *vap_map = NULL;
     rdk_wifi_vap_info_t rdk_vap_info;
     
+    rdk_wifi_dbg_print(1, "Enter %s function\n", __FUNCTION__);
     vap_map = (wifi_vap_info_t *)malloc(sizeof(wifi_vap_info_t));
     if (!vap_map) {
         rdk_wifi_dbg_print(1, "Failed to allocate memory %s\n", __FUNCTION__);
@@ -5683,6 +5687,7 @@ int rdk_wifi_ApSetStatsEnable(int wlanIndex, bool bValue)
     wifi_vap_info_t *vap_map = NULL;
     rdk_wifi_vap_info_t rdk_vap_info;
     
+    rdk_wifi_dbg_print(1, "Enter %s\n", __FUNCTION__);
     vap_map = (wifi_vap_info_t *)malloc(sizeof(wifi_vap_info_t));
     if (!vap_map) {
         rdk_wifi_dbg_print(1, "Failed to allocate memory %s\n", __FUNCTION__);
@@ -5706,6 +5711,7 @@ int rdk_wifi_ApGetStatsEnable(int wlanIndex, bool *bValue)
     wifi_vap_info_t *vap_map = NULL;
     rdk_wifi_vap_info_t rdk_vap_info;
     
+    rdk_wifi_dbg_print(1, "Enter %s\n", __FUNCTION__);
     vap_map = (wifi_vap_info_t *)malloc(sizeof(wifi_vap_info_t));
     if (!vap_map) {
         rdk_wifi_dbg_print(1, "Failed to allocate memory %s\n", __FUNCTION__);
@@ -5734,6 +5740,7 @@ int rdk_wifi_setBSSTransitionActivated(int wlanIndex, bool BSSTransitionActivate
     wifi_vap_info_t *vap_map = NULL;
     rdk_wifi_vap_info_t rdk_vap_info;
     
+    rdk_wifi_dbg_print(1, "Enter %s\n", __FUNCTION__);
     vap_map = (wifi_vap_info_t *)malloc(sizeof(wifi_vap_info_t));
     if (!vap_map) {
         rdk_wifi_dbg_print(1, "Failed to allocate memory %s\n", __FUNCTION__);
@@ -5756,6 +5763,7 @@ int rdk_wifi_getBSSTransitionActivated(int wlanIndex, bool *BSSTransitionActivat
     wifi_vap_info_t *vap_map = NULL;
     rdk_wifi_vap_info_t rdk_vap_info;
     
+    rdk_wifi_dbg_print(1, "Enter %s\n", __FUNCTION__);
     vap_map = (wifi_vap_info_t *)malloc(sizeof(wifi_vap_info_t));
     if (!vap_map) {
         rdk_wifi_dbg_print(1, "Failed to allocate memory %s\n", __FUNCTION__);
@@ -5784,6 +5792,7 @@ int rdk_wifi_GetApMacFilterMode(int wlanIndex, int *mode)
     wifi_vap_info_t *vap_map = NULL;
     rdk_wifi_vap_info_t rdk_vap_info;
     
+    rdk_wifi_dbg_print(1, "Enter %s\n", __FUNCTION__);
     vap_map = (wifi_vap_info_t *)malloc(sizeof(wifi_vap_info_t));
     if (!vap_map) {
         rdk_wifi_dbg_print(1, "Failed to allocate memory %s\n", __FUNCTION__);
@@ -5812,6 +5821,7 @@ int rdk_wifi_SetApMacFilterMode(int wlanIndex, int mode)
     wifi_vap_info_t *vap_map = NULL;
     rdk_wifi_vap_info_t rdk_vap_info;
     
+    rdk_wifi_dbg_print(1, "Enter %s\n", __FUNCTION__);
     vap_map = (wifi_vap_info_t *)malloc(sizeof(wifi_vap_info_t));
     if (!vap_map) {
         rdk_wifi_dbg_print(1, "Failed to allocate memory %s\n", __FUNCTION__);
@@ -7187,6 +7197,7 @@ int wifidb_init_vap_config_default(int vap_index, wifi_vap_info_t *config,
     bool exists = true;
     wifi_ctrl_t *ctrl = get_wifictrl_obj();
     
+    wifi_util_dbg_print(WIFI_DB,"%s:%d: enter %d\n",__func__, __LINE__); 
     cfg = (wifi_vap_info_t *)malloc(sizeof(wifi_vap_info_t));
     if (!cfg) {
         wifi_util_error_print(WIFI_DB, "%s:%d: Memory allocation failed\n", __func__, __LINE__);
@@ -9214,6 +9225,7 @@ int wifi_db_update_vap_config()
     char strValue[256] = {0};
     wifi_mgr_t *mgr = get_wifimgr_obj();
 
+    wifi_util_dbg_print(WIFI_MGR,"%s:%d: Enter\n",__func__, __LINE__);
     vap_cfg = (wifi_vap_info_t *)malloc(sizeof(wifi_vap_info_t));
     if (!vap_cfg) {
         wifi_util_error_print(WIFI_MGR, "%s:%d: Failed to allocate memory\n", __func__, __LINE__);

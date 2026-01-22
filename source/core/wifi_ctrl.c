@@ -2551,6 +2551,7 @@ wifi_vap_info_t* get_wifidb_vap_parameters(uint8_t vapIndex)
 
 int get_wifi_vap_network_status(uint8_t vapIndex, bool *status)
 {
+    wifi_util_dbg_print(WIFI_DB,"%s:%d: Enter\n", __func__, __LINE__);
     int ret;
     wifi_vap_info_t *vap_cfg = NULL;
     rdk_wifi_vap_info_t rdk_vap_cfg;
