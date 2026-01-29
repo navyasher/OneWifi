@@ -1249,7 +1249,7 @@ void Psm_Db_Write_MacFilter(wifi_mac_entry_param_t *mcfg)
                 if (strlen(mcfg->device_name) != 0) {
                     snprintf(temp_mac_entry->device_name, sizeof(temp_mac_entry->device_name), "%s", mcfg->device_name);
                 }
-                hash_map_put(psm_mac_map, strdup(mcfg->mac), temp_mac_entry);
+                hash_map_put(psm_mac_map, mcfg->mac, temp_mac_entry);
                 count = hash_map_count(psm_mac_map);
                 update_macfilter_list( (mcfg->vap_index + 1), count, psm_mac_map);
             }

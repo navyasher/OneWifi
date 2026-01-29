@@ -1156,7 +1156,7 @@ sta_data_t *create_sta_data_hash_map(hash_map_t *sta_map, mac_addr_t l_sta_mac)
     }
     memset(sta, 0, sizeof(sta_data_t));
     memcpy(sta->sta_mac, l_sta_mac, sizeof(mac_addr_t));
-    hash_map_put(sta_map, strdup(to_mac_str(l_sta_mac, mac_str)), sta);
+    hash_map_put(sta_map, to_mac_str(l_sta_mac, mac_str), sta);
     pthread_mutex_unlock(&g_monitor_module.data_lock);
     return sta;
 }
@@ -1442,7 +1442,7 @@ void process_connect(unsigned int ap_index, auth_deauth_dev_t *dev)
         memcpy(sta->sta_mac, dev->sta_mac, sizeof(mac_addr_t));
         memcpy(sta->dev_stats.cli_MACAddress, dev->sta_mac, sizeof(mac_addr_t));
         sta->primary_link = 1;
-        hash_map_put(sta_map, strdup(sta_key), sta);
+        hash_map_put(sta_map, sta_key, sta);
     }
 
     clock_gettime(CLOCK_MONOTONIC, &tv_now);
@@ -1678,7 +1678,7 @@ static void update_subscribe_data(wifi_monitor_data_t *event)
             }
             clctr_subscription->is_event_subscribed = event->u.collect_stats.is_event_subscribed;
             clctr_subscription->stats_type_subscribed |= 1 << event->u.collect_stats.stats_type;
-            hash_map_put(mon_data->clctr_subscriber_map, strdup(stats_key), clctr_subscription);
+            hash_map_put(mon_data->clctr_subscriber_map, stats_key, clctr_subscription);
         } else {
             return;
         }
@@ -2436,7 +2436,7 @@ static int update_pinger_map(int ap_index, mac_addr_t mac_addr, bool remove)
         pinger_data->ap_index = ap_index;
         memcpy(pinger_data->mac_addr, mac_addr, sizeof(mac_addr_t));
         wifi_util_info_print(WIFI_MON, "%s %d: Enabling Pinger for mac %s\n", __func__, __LINE__, mac_str);
-        hash_map_put(g_events_monitor.csi_pinger_map, strdup(mac_str), pinger_data);
+        hash_map_put(g_events_monitor.csi_pinger_map, mac_str, pinger_data);
     }
 
     return 0;

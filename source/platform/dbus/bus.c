@@ -636,7 +636,7 @@ bus_error_t append_subscriber_events(bus_handle_t *handle, void *cb, char const 
              event_name)) == NULL) {
         callback = (bus_sub_callback_table_t *)malloc(sizeof(bus_sub_callback_table_t));
         callback->sub_handler = cb;
-        hash_map_put(handle->subscribe_callback, strdup(event_name), callback);
+        hash_map_put(handle->subscribe_callback, event_name, callback);
     }
     pthread_mutex_unlock(&dbus_lock);
     wifi_util_info_print(WIFI_BUS, "%s:Global bus updated %d\n", __func__, __LINE__);
@@ -671,7 +671,7 @@ bus_error_t append_method_callback(bus_handle_t *handle, bus_data_element_t *ele
              element->full_name)) == NULL) {
         result_element = (bus_data_element_t *)malloc(sizeof(bus_data_element_t));
         memcpy(result_element, element, sizeof(bus_data_element_t));
-        hash_map_put(handle->method_callback, strdup(element->full_name), result_element);
+        hash_map_put(handle->method_callback, element->full_name, result_element);
     }
     pthread_mutex_unlock(&dbus_lock);
     return bus_error_success;
@@ -851,7 +851,7 @@ static bus_error_t add_dbus_handlers(bus_handle_t *handle)
         wifi_util_info_print(WIFI_BUS, "%s: server is not added %d\n", __func__, __LINE__);
         server = (bus_handle_t *)malloc(sizeof(bus_handle_t));
         memcpy(server, handle, sizeof(bus_handle_t));
-        hash_map_put(server_desc, strdup(handle->dbus_path), server);
+        hash_map_put(server_desc, handle->dbus_path, server);
     } else {
         wifi_util_info_print(WIFI_BUS, "%s: server is already present hence modifying %d:%s\n",
             __func__, __LINE__, handle->dbus_path);
@@ -861,7 +861,7 @@ static bus_error_t add_dbus_handlers(bus_handle_t *handle)
         }
         server = (bus_handle_t *)malloc(sizeof(bus_handle_t));
         memcpy(server, handle, sizeof(bus_handle_t));
-        hash_map_put(server_desc, strdup(handle->dbus_path), server);
+        hash_map_put(server_desc, handle->dbus_path, server);
     }
 
     pthread_mutex_unlock(&dbus_lock);

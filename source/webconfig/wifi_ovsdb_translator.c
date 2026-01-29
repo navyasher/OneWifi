@@ -1427,7 +1427,7 @@ webconfig_error_t translate_macfilter_from_ovsdb_to_rdk_vap(const struct schema_
             memset(acl_entry, 0, (sizeof(acl_entry_t)));
 
             memcpy(&acl_entry->mac, mac, sizeof(mac_address_t));
-            hash_map_put(rdk_vap->acl_map, strdup(mac_str), acl_entry);
+            hash_map_put(rdk_vap->acl_map, mac_str, acl_entry);
         } else {
             wifi_util_info_print(WIFI_WEBCONFIG, "%s:%d:mac filter entry already avaialble for mac[%s] index:%d\n", __func__, __LINE__, mac_str, i);
         }
@@ -3253,7 +3253,7 @@ webconfig_error_t assoclist_update_assoc_map(rdk_wifi_vap_info_t *rdk_vap_info)
                     return webconfig_error_translate_to_ovsdb;
                 }
                 memcpy(temp_assoc_dev_data, diff_assoc_dev_data, sizeof(assoc_dev_data_t));
-                hash_map_put(current_assoc_map, strdup(diff_mac_str), temp_assoc_dev_data);
+                hash_map_put(current_assoc_map, diff_mac_str, temp_assoc_dev_data);
                 wifi_util_dbg_print(WIFI_WEBCONFIG,"%s:%d: diff mac : %s is added to current assoc map for index : %d\n",
                         __func__, __LINE__, diff_mac_str, diff_assoc_dev_data->ap_index);
             } else {
@@ -4632,7 +4632,7 @@ webconfig_error_t  translate_config_from_ovsdb_for_stats_config(webconfig_subdoc
         }
         memset(stat_config_entry, 0, sizeof(stats_config_t));
         memcpy(stat_config_entry, &temp_stat_config_entry, sizeof(stats_config_t));
-        hash_map_put(data->u.decoded.stats_config_map, strdup(temp_stat_config_entry.stats_cfg_id), stat_config_entry);
+        hash_map_put(data->u.decoded.stats_config_map, temp_stat_config_entry.stats_cfg_id, stat_config_entry);
     }
 
     return webconfig_error_none;
@@ -4752,7 +4752,7 @@ webconfig_error_t  translate_config_from_ovsdb_for_steering_config(webconfig_sub
         }
         memset(steer_config_entry, 0, sizeof(steering_config_t));
         memcpy(steer_config_entry, &temp_steer_config, sizeof(steering_config_t));
-        hash_map_put(data->u.decoded.steering_config_map, strdup(temp_steer_config.steering_cfg_id), steer_config_entry);
+        hash_map_put(data->u.decoded.steering_config_map, temp_steer_config.steering_cfg_id, steer_config_entry);
     }
 
     return webconfig_error_none;
@@ -5084,7 +5084,7 @@ webconfig_error_t  translate_config_from_ovsdb_for_steering_clients(webconfig_su
         }
         memset(steering_client_entry, 0, sizeof(band_steering_clients_t));
         memcpy(steering_client_entry, &temp_steering_client, sizeof(band_steering_clients_t));
-        hash_map_put(data->u.decoded.steering_client_map, strdup(temp_steering_client.steering_client_id), steering_client_entry);
+        hash_map_put(data->u.decoded.steering_client_map, temp_steering_client.steering_client_id, steering_client_entry);
     }
 
     return webconfig_error_none;
@@ -5167,7 +5167,7 @@ webconfig_error_t  translate_config_from_ovsdb_for_vif_neighbors(webconfig_subdo
         }
         memset(vif_neighbor_entry, 0, sizeof(vif_neighbors_t));
         memcpy(vif_neighbor_entry, &temp_vif_neighbor, sizeof(vif_neighbors_t));
-        hash_map_put(data->u.decoded.vif_neighbors_map, strdup(temp_vif_neighbor.neighbor_id), vif_neighbor_entry);
+        hash_map_put(data->u.decoded.vif_neighbors_map, temp_vif_neighbor.neighbor_id, vif_neighbor_entry);
     }
 
     return webconfig_error_none;

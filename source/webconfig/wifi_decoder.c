@@ -3736,7 +3736,7 @@ webconfig_error_t decode_associated_clients_object(webconfig_subdoc_data_t *data
                         return webconfig_error_decode;
                     }
                     memcpy(tmp_assoc_dev_data, &assoc_dev_data, sizeof(assoc_dev_data_t));
-                    hash_map_put(associated_devices_map, strdup(tmp_mac_key), tmp_assoc_dev_data);
+                    hash_map_put(associated_devices_map, tmp_mac_key, tmp_assoc_dev_data);
                 } else {
                     wifi_util_error_print(WIFI_WEBCONFIG,"%s:%d: mac %s is already present for %d\n", __func__, __LINE__, tmp_mac_key, rdk_vap_info->vap_index);
                 }
@@ -3805,7 +3805,7 @@ webconfig_error_t decode_mac_object(rdk_wifi_vap_info_t *rdk_vap_info, cJSON *ob
         str_tolower(tmp_mac);
         tmp_acl_entry = hash_map_get(rdk_vap_info->acl_map, tmp_mac);
         if (tmp_acl_entry == NULL) {
-            hash_map_put(rdk_vap_info->acl_map, strdup(tmp_mac), acl_entry);
+            hash_map_put(rdk_vap_info->acl_map, tmp_mac, acl_entry);
         } else {
             memcpy(tmp_acl_entry, acl_entry, sizeof(acl_entry_t));
             free(acl_entry);
@@ -4628,7 +4628,7 @@ webconfig_error_t decode_stats_config_object(hash_map_t **stats_map, cJSON *st_a
                 }
                 memset(sta_cfg, 0, sizeof(stats_config_t));
                 memcpy(sta_cfg, &temp_sta_cfg, sizeof(stats_config_t));
-                hash_map_put(*stats_map, strdup(key), sta_cfg);
+                hash_map_put(*stats_map, key, sta_cfg);
             } else {
                 memcpy(sta_cfg, &temp_sta_cfg, sizeof(stats_config_t));
             }
@@ -4749,7 +4749,7 @@ webconfig_error_t decode_steering_config_object(hash_map_t **steer_map, cJSON *s
                 }
                 memset(st_cfg, 0, sizeof(steering_config_t));
                 memcpy(st_cfg, &temp_st_cfg, sizeof(steering_config_t));
-                hash_map_put(*steer_map, strdup(key), st_cfg);
+                hash_map_put(*steer_map, key, st_cfg);
             } else {
                 memcpy(st_cfg, &temp_st_cfg, sizeof(steering_config_t));
             }
@@ -4946,7 +4946,7 @@ webconfig_error_t decode_steering_clients_object(hash_map_t **steering_client_ma
                 }
                 memset(st_cfg, 0, sizeof(band_steering_clients_t));
                 memcpy(st_cfg, &temp_st_cfg, sizeof(band_steering_clients_t));
-                hash_map_put(*steering_client_map, strdup(key), st_cfg);
+                hash_map_put(*steering_client_map, key, st_cfg);
             } else {
                 memcpy(st_cfg, &temp_st_cfg, sizeof(band_steering_clients_t));
             }
@@ -5017,7 +5017,7 @@ webconfig_error_t decode_vif_neighbors_object(hash_map_t **neighbors_map, cJSON 
                 }
                 memset(neighbors_cfg, 0, sizeof(vif_neighbors_t));
                 memcpy(neighbors_cfg, &temp_neighbors_cfg, sizeof(vif_neighbors_t));
-                hash_map_put(*neighbors_map, strdup(key), neighbors_cfg);
+                hash_map_put(*neighbors_map, key, neighbors_cfg);
             } else {
                 memcpy(neighbors_cfg, &temp_neighbors_cfg, sizeof(vif_neighbors_t));
             }

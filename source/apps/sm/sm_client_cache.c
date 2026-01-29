@@ -69,7 +69,7 @@ static inline sm_client_t* client_alloc(sm_client_cache_t *cache, sm_client_id_t
     if (client) {
         memcpy(client->id, client_id, sizeof(sm_client_id_t));
         ds_dlist_init(&client->samples, dpp_client_record_t, node);
-        hash_map_put(cache->clients, strdup(client_id), client);
+        hash_map_put(cache->clients, client_id, client);
     }
     return client;
 }

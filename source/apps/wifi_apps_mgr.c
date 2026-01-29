@@ -292,7 +292,7 @@ int app_register(wifi_apps_mgr_t *apps_mgr, wifi_app_descriptor_t *descriptor)
     app->ctrl = apps_mgr->ctrl;
     memcpy(&app->desc, descriptor, sizeof(wifi_app_descriptor_t));
     snprintf(key_str, sizeof(key_str), "app_%010d", descriptor->inst);
-    hash_map_put(apps_mgr->apps_map, strdup(key_str), app);
+    hash_map_put(apps_mgr->apps_map, key_str, app);
     if (descriptor->rfc == true) {
         app->desc.init_fn(app, app->desc.create_flag);
     }

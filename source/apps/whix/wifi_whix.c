@@ -1516,7 +1516,7 @@ int upload_client_telemetry_data(wifi_app_t *app, unsigned int num_devs, unsigne
                     return RETURN_ERR;
                 }
                 // MAC not found, so use the last used data as 0
-                hash_map_put(app->data.u.whix.last_stats_map, strdup(sta_key), dev_stats_last);
+                hash_map_put(app->data.u.whix.last_stats_map, sta_key, dev_stats_last);
             }
             if (sta[i].dev_stats.cli_Active == true) {
                 snprintf(tmp, 32, "%lu,",
