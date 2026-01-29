@@ -155,7 +155,7 @@ void    queue_destroy   (queue_t *q)
     free(q);
 }
 
-int8_t hash_map_put(hash_map_t *map, char *key, void *data)
+int8_t hash_map_put(hash_map_t *map, const char *key, void *data)
 {
     hash_element_t *e;
     char *dup_key = NULL;
