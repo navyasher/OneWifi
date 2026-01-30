@@ -365,15 +365,8 @@ interop_data_t *create_interop_sta_data_hash_map(hash_map_t *sta_map, mac_addr_t
     memset(sta, 0, sizeof(interop_data_t));
     memmove(sta->sta_mac, l_sta_mac, sizeof(mac_addr_t));
     memmove(sta->ap_mac, l_ap_mac, sizeof(mac_addr_t));
-    char *mac_str_dup = strdup(to_mac_str(l_sta_mac, mac_str));
-    if (mac_str_dup == NULL) {
-        wifi_util_error_print(WIFI_MON, "%s:%d strdup allocation failure\r\n", __func__, __LINE__);
-        free(sta);
-        pthread_mutex_unlock(&g_monitor_module.data_lock);
-        return NULL;
-    }
-    hash_map_put(sta_map, mac_str_dup, sta);
-    wifi_util_dbg_print(WIFI_MON, "%s:%d Created STA entry for MAC: %s\r\n", __func__, __LINE__, mac_str_dup);
+    hash_map_put(sta_map, to_mac_str(l_sta_mac, mac_str), sta);
+    wifi_util_dbg_print(WIFI_MON, "%s:%d Created STA entry for MAC: %s\r\n", __func__, __LINE__, to_mac_str(l_sta_mac, mac_str));
     pthread_mutex_unlock(&g_monitor_module.data_lock);
     return sta;
 }
@@ -4248,14 +4241,8 @@ int coordinator_create_task(wifi_mon_collector_element_t **collector_elem, wifi_
         wifi_util_error_print(WIFI_MON, "%s:%d: coordinator_create_provider_elem failed\n", __func__,__LINE__);
         return RETURN_ERR;
     }
-    char* key_copy = strdup(provider_elem->key);
-    if (key_copy == NULL) {
-        wifi_util_error_print(WIFI_MON, "%s:%d: strdup failed\n", __func__,__LINE__);
-        coordinator_free_provider_elem(&provider_elem);
-        return RETURN_ERR;
-    }
 
-    if (hash_map_put((*collector_elem)->provider_list, key_copy, provider_elem) != 0) {
+    if (hash_map_put((*collector_elem)->provider_list, provider_elem->key, provider_elem) != 0) {
         wifi_util_error_print(WIFI_MON, "%s:%d: hash_map_put failed\n", __func__,__LINE__);
         coordinator_free_provider_elem(&provider_elem);
         return RETURN_ERR;
@@ -4325,14 +4312,8 @@ int coordinator_update_task(wifi_mon_collector_element_t *collector_elem, wifi_m
     wifi_mon_provider_element_t *provider_elem = (wifi_mon_provider_element_t *)hash_map_get(collector_elem->provider_list, dup_provider_elem->key);
     if (provider_elem == NULL) {
         provider_elem = dup_provider_elem;
-        char* key_copy = strdup(provider_elem->key);
-        if (key_copy == NULL) {
-            wifi_util_error_print(WIFI_MON, "%s:%d: strdup failed\n", __func__,__LINE__);
-            coordinator_free_provider_elem(&dup_provider_elem);
-            return RETURN_ERR;
-        }
 
-        if (hash_map_put(collector_elem->provider_list, key_copy, provider_elem) != 0) {
+        if (hash_map_put(collector_elem->provider_list, provider_elem->key, provider_elem) != 0) {
             wifi_util_error_print(WIFI_MON, "%s:%d: hash_map_put failed\n", __func__,__LINE__);
             coordinator_free_provider_elem(&dup_provider_elem);
             return RETURN_ERR;

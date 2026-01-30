@@ -484,7 +484,7 @@ void csi_data_in_json_format(mac_address_t sta_mac, wifi_csi_data_t *csi)
         ptr = calloc(1, sizeof(stalist_map_info_t));
         VERIFY_NULL_CHECK(ptr);
         hash_map_put(p_csi_json_obj->stalist_array_map,
-            strdup(str_sta_mac), ptr);
+            str_sta_mac, ptr);
     }
 
     if (ptr->sta_json_arr_obj == NULL) {
