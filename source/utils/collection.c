@@ -22,7 +22,7 @@
 #include <string.h>
 #include <assert.h>
 #include "collection.h"
-
+#include "wifi_util.h"
 
 queue_t *queue_create   (void)
 {
@@ -159,20 +159,32 @@ int8_t hash_map_put(hash_map_t *map, char *key, void *data)
 {
     hash_element_t *e;
     
+    wifi_util_dbg_print(WIFI_CTRL, "NTesting function hash_map_put line %d: Entry\n", __LINE__);
+    
     if (map == NULL || map->queue == NULL || key == NULL) {
+        wifi_util_dbg_print(WIFI_CTRL, "NTesting function hash_map_put line %d: NULL parameter check failed\n", __LINE__);
         return -1;
     }
+
+    wifi_util_dbg_print(WIFI_CTRL, "NTesting function hash_map_put line %d: Parameters valid, key=%s\n", __LINE__, key ? key : "NULL");
 
     map->itr = NULL;
     e = (hash_element_t *)malloc(sizeof(hash_element_t));
     if (e == NULL) {
+        wifi_util_error_print(WIFI_CTRL, "NTesting function hash_map_put line %d: malloc failed for hash_element_t\n", __LINE__);
         return -1;
     }
+    
+    wifi_util_dbg_print(WIFI_CTRL, "NTesting function hash_map_put line %d: Allocated hash_element_t successfully\n", __LINE__);
+    
     memset(e, 0, sizeof(hash_element_t));
     e->key = key;
     e->data = data;
 
+    wifi_util_dbg_print(WIFI_CTRL, "NTesting function hash_map_put line %d: About to call queue_push\n", __LINE__);
+
     if (queue_push(map->queue, e) < 0) {
+        wifi_util_error_print(WIFI_CTRL, "NTesting function hash_map_put line %d: queue_push failed, cleaning up\n", __LINE__);
         free(key);
         key = NULL;
         if (e->data != NULL) {
@@ -182,6 +194,8 @@ int8_t hash_map_put(hash_map_t *map, char *key, void *data)
         free(e);
         return -1;
     }
+    
+    wifi_util_dbg_print(WIFI_CTRL, "NTesting function hash_map_put line %d: Successfully added to hash_map\n", __LINE__);
     return 0;
 }
 
