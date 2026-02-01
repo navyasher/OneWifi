@@ -243,15 +243,8 @@ telemetry_data_t *create_wpa3_enhanced_sta_data_hash_map(hash_map_t *sta_map, ma
     }
     memset(sta, 0, sizeof(telemetry_data_t));
     memcpy(sta->sta_mac, l_sta_mac, sizeof(mac_addr_t));
-    char *mac_str_dup = strdup(to_mac_str(l_sta_mac, mac_str));
-    if (mac_str_dup == NULL) {
-        wifi_util_error_print(WIFI_MON, "%s:%d strdup allocation failure\r\n", __func__, __LINE__);
-        free(sta);
-        pthread_mutex_unlock(&g_monitor_module.data_lock);
-        return NULL;
-    }
-    hash_map_put(sta_map, mac_str_dup, sta);
-    wifi_util_dbg_print(WIFI_MON, "Created STA entry for MAC: %s\r\n", mac_str_dup);
+    hash_map_put(sta_map, to_mac_str(l_sta_mac, mac_str), sta);
+    wifi_util_dbg_print(WIFI_MON, "Created STA entry for MAC: %s\r\n", to_mac_str(l_sta_mac, mac_str));
     pthread_mutex_unlock(&g_monitor_module.data_lock);
     return sta;
 }
@@ -4439,12 +4432,6 @@ int coordinator_check_stats_config(wifi_mon_stats_config_t *mon_stats_config)
                     stats_key, mon_stats_config->inst);
                 return RETURN_ERR;
             }
-            char *key_copy = strdup(stats_key);
-            if (key_copy == NULL) {
-                wifi_util_error_print(WIFI_MON, "%s:%d: Failed to duplicate key\n", __func__,
-                    __LINE__);
-                return RETURN_ERR;
-            }
             clctr_subscription = hash_map_get(mon_data->clctr_subscriber_map, stats_key);
             if (clctr_subscription != NULL) {
                 collector_elem->stats_clctr.is_event_subscribed =
@@ -4457,7 +4444,7 @@ int coordinator_check_stats_config(wifi_mon_stats_config_t *mon_stats_config)
                     __func__, __LINE__, stats_key, collector_elem->stats_clctr.is_event_subscribed,
                     mon_stats_config->data_type, collector_elem->stats_clctr.stats_type_subscribed);
             }
-            hash_map_put(collector_list, key_copy, collector_elem);
+            hash_map_put(collector_list, stats_key, collector_elem);
             wifi_util_info_print(WIFI_MON, "%s:%d: created task for key : %s for app  %d\n",
                 __func__, __LINE__, stats_key, mon_stats_config->inst);
         } else {

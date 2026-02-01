@@ -257,7 +257,7 @@ int em_client_stats_store(unsigned int radio_index, unsigned int vap_index, int 
 
         memcpy(new_stats, dev3, sizeof(wifi_associated_dev3_t));
         hash_map_put(em_ap_metrics_report_cache[radio_index].ap_data[arr_vap_index].client_stats_map,
-            strdup(key), new_stats);
+            key, new_stats);
     } else {
         memcpy(stats, dev3, sizeof(wifi_associated_dev3_t));
     }
