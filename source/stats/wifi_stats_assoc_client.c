@@ -141,6 +141,7 @@ int process_assoc_dev_stats(wifi_mon_stats_args_t *args, hash_map_t *sta_map, vo
 int execute_assoc_client_stats_api(wifi_mon_collector_element_t *c_elem, wifi_monitor_t *mon_data,
     unsigned long task_interval_ms)
 {
+    printf("%s:%d ENTRY: c_elem=%p, mon_data=%p, task_interval_ms=%lu\n", __func__, __LINE__, c_elem, mon_data, task_interval_ms);
     wifi_front_haul_bss_t *bss_param = NULL;
     wifi_associated_dev3_t *dev_array = NULL;
     wifi_mon_stats_args_t *args = NULL;

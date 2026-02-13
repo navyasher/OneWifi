@@ -1373,6 +1373,7 @@ webconfig_error_t translate_macfilter_from_rdk_vap_to_ovsdb_vif_state(const rdk_
 
 webconfig_error_t translate_macfilter_from_ovsdb_to_rdk_vap(const struct schema_Wifi_VIF_Config *row, rdk_wifi_vap_info_t *rdk_vap, wifi_platform_property_t *wifi_prop)
 {
+    printf("%s:%d ENTRY: row=%p, rdk_vap=%p, wifi_prop=%p\n", __func__, __LINE__, row, rdk_vap, wifi_prop);
     int i = 0;
     mac_address_t mac;
     char *mac_str;

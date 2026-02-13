@@ -243,6 +243,7 @@ telemetry_data_t *create_wpa3_enhanced_sta_data_hash_map(hash_map_t *sta_map, ma
     }
     memset(sta, 0, sizeof(telemetry_data_t));
     memcpy(sta->sta_mac, l_sta_mac, sizeof(mac_addr_t));
+    wifi_util_dbg_print(WIFI_MON, "%s:%d NTesting CALLING hash_map_put with key=%s, sta=%p\n", __func__, __LINE__, to_mac_str(l_sta_mac, mac_str), sta);
     hash_map_put(sta_map, to_mac_str(l_sta_mac, mac_str), sta);
     wifi_util_dbg_print(WIFI_MON, "Created STA entry for MAC: %s\r\n", to_mac_str(l_sta_mac, mac_str));
     pthread_mutex_unlock(&g_monitor_module.data_lock);
@@ -358,6 +359,7 @@ interop_data_t *create_interop_sta_data_hash_map(hash_map_t *sta_map, mac_addr_t
     memset(sta, 0, sizeof(interop_data_t));
     memmove(sta->sta_mac, l_sta_mac, sizeof(mac_addr_t));
     memmove(sta->ap_mac, l_ap_mac, sizeof(mac_addr_t));
+    wifi_util_dbg_print(WIFI_MON, "%s:%d NTesting CALLING hash_map_put with key=%s, sta=%p\n", __func__, __LINE__, to_mac_str(l_sta_mac, mac_str), sta);
     hash_map_put(sta_map, to_mac_str(l_sta_mac, mac_str), sta);
     wifi_util_dbg_print(WIFI_MON, "%s:%d Created STA entry for MAC: %s\r\n", __func__, __LINE__, to_mac_str(l_sta_mac, mac_str));
     pthread_mutex_unlock(&g_monitor_module.data_lock);
@@ -1142,6 +1144,7 @@ sta_data_t *create_sta_data_hash_map(hash_map_t *sta_map, mac_addr_t l_sta_mac)
     }
     memset(sta, 0, sizeof(sta_data_t));
     memcpy(sta->sta_mac, l_sta_mac, sizeof(mac_addr_t));
+    wifi_util_dbg_print(WIFI_MON, "%s:%d NTesting CALLING hash_map_put with key=%s, sta=%p\n", __func__, __LINE__, to_mac_str(l_sta_mac, mac_str), sta);
     hash_map_put(sta_map, to_mac_str(l_sta_mac, mac_str), sta);
     pthread_mutex_unlock(&g_monitor_module.data_lock);
     return sta;
@@ -1399,6 +1402,7 @@ void process_deauthenticate	(unsigned int ap_index, auth_deauth_dev_t *dev)
 
 void process_connect(unsigned int ap_index, auth_deauth_dev_t *dev)
 {
+    printf("%s:%d ENTRY: ap_index=%u, dev=%p\n", __func__, __LINE__, ap_index, dev);
     sta_key_t sta_key;
     sta_data_t *sta;
     hash_map_t *sta_map;
@@ -1428,6 +1432,7 @@ void process_connect(unsigned int ap_index, auth_deauth_dev_t *dev)
         memcpy(sta->sta_mac, dev->sta_mac, sizeof(mac_addr_t));
         memcpy(sta->dev_stats.cli_MACAddress, dev->sta_mac, sizeof(mac_addr_t));
         sta->primary_link = 1;
+        wifi_util_dbg_print(WIFI_MON, "%s:%d NTesting CALLING hash_map_put with key=%s, sta=%p\n", __func__, __LINE__, sta_key, sta);
         hash_map_put(sta_map, sta_key, sta);
     }
 
@@ -1602,6 +1607,7 @@ void clear_sta_counters(unsigned int vap_index)
 
 static void update_subscribe_data(wifi_monitor_data_t *event)
 {
+    printf("%s:%d ENTRY: event=%p, stats_type=%d\n", __func__, __LINE__, event, event ? event->u.collect_stats.stats_type : -1);
     hash_map_t *collector_list = NULL;
     wifi_mon_stats_descriptor_t *stat_desc = NULL;
     wifi_mon_collector_element_t *collector_elem = NULL;
@@ -2397,6 +2403,7 @@ static void send_ping_data(int ap_idx, unsigned char *mac, char *client_ip, char
 
 static int update_pinger_map(int ap_index, mac_addr_t mac_addr, bool remove)
 {
+    printf("%s:%d ENTRY: ap_index=%d, remove=%d\n", __func__, __LINE__, ap_index, remove);
     csi_pinger_data_t *pinger_data = NULL;
     mac_addr_str_t mac_str = { 0 };
 
@@ -2973,6 +2980,7 @@ int vapstatus_callback(int apIndex, wifi_vapstatus_t status)
         return -1;
     }
 
+    wifi_util_dbg_print(WIFI_MON, "%s:%d NTesting CALLING hash_map_cleanup with sta_map=%p for apIndex=%d\n", __func__, __LINE__, sta_map, apIndex);
     hash_map_cleanup(sta_map);
 
     pthread_mutex_unlock(&g_monitor_module.data_lock);

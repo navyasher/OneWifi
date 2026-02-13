@@ -22,6 +22,7 @@
 #include <string.h>
 #include <assert.h>
 #include "collection.h"
+#include "wifi_hal.h"
 
 
 queue_t *queue_create   (void)
@@ -155,18 +156,17 @@ void    queue_destroy   (queue_t *q)
     free(q);
 }
 
-int8_t hash_map_put(hash_map_t *map, const char *key, void *data)
-{
+int8_t hash_map_put(hash_map_t *map, char *key, void *data)
+    {
     hash_element_t *e;
     char *dup_key = NULL;
-    
+
+    wifi_hal_dbg_print("%s:%d NTesting ENTRY: map=%p, key=%s, data=%p\n", __func__, __LINE__, map, key ? key : "NULL", data);
     if (map == NULL || map->queue == NULL || key == NULL || data == NULL) {
+        wifi_hal_dbg_print("%s:%d NTesting ERROR: Invalid parameters\n", __func__, __LINE__);
         return -1;
     }
 
-
-    
-    // Create a copy of the key to ensure we own it
     dup_key = strndup(key, HASH_MAP_MAX_KEY_SIZE);
     if (dup_key == NULL) {
         return -1;
@@ -181,15 +181,16 @@ int8_t hash_map_put(hash_map_t *map, const char *key, void *data)
     memset(e, 0, sizeof(hash_element_t));
     e->key = dup_key;
     e->data = data;
-
+    
     if (queue_push(map->queue, e) < 0) {
+        wifi_hal_dbg_print("%s:%d NTesting ERROR: queue_push failed\n", __func__, __LINE__);
         free(dup_key);
         free(e);
         return -1;
     }
+    wifi_hal_dbg_print("%s:%d Ntesting EXIT: Successfully added key=%s\n", __func__, __LINE__, key);
     return 0;
 }
-
 void *hash_map_get(hash_map_t *map, const char *key)
 {
     hash_element_t *he;
@@ -362,7 +363,10 @@ void  hash_map_cleanup(hash_map_t *map)
     hash_element_t *he;
     element_t    *e, *tmp;
     
+    wifi_hal_dbg_print("%s:%d NTesting ENTRY: map=%p\n", __func__, __LINE__, map);
+    
     if (map == NULL || map->queue == NULL || map->queue->head == NULL) {
+        wifi_hal_dbg_print("%s:%d NTesting EXIT: Early return due to NULL parameters\n", __func__, __LINE__);
         return;
     }
     e = map->queue->head;
@@ -383,6 +387,7 @@ void  hash_map_cleanup(hash_map_t *map)
     }
     map->queue->head = NULL;
     map->queue->count = 0;
+    wifi_hal_dbg_print("%s:%d EXIT: Cleanup completed\n", __func__, __LINE__);
     return;
 }
 
@@ -397,6 +402,7 @@ void  hash_map_destroy    (hash_map_t *map)
 
 hash_map_t *hash_map_clone(hash_map_t *src_map, size_t data_size)
 {
+    wifi_hal_dbg_print("%s:%d ENTRY: src_map=%p, data_size=%zu\n", __func__, __LINE__, src_map, data_size);
     element_t *e;
     hash_element_t *he;
     hash_map_t *dst_map;

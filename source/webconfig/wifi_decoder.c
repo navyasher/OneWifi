@@ -3365,6 +3365,7 @@ webconfig_error_t decode_frame_data(cJSON *obj_assoc_client, frame_data_t *frame
 
 webconfig_error_t decode_associated_clients_object(webconfig_subdoc_data_t *data, cJSON *obj_vaps, assoclist_type_t assoclist_type)
 {
+    printf("%s:%d ENTRY: data=%p, obj_vaps=%p, assoclist_type=%d\n", __func__, __LINE__, data, obj_vaps, assoclist_type);
 
     mac_address_t mac;
     cJSON *obj_vap;
