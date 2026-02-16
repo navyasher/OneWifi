@@ -2989,10 +2989,10 @@ int vapstatus_callback(int apIndex, wifi_vapstatus_t status)
         // Create test entries with unique data
         memset(test_sta1, 0xAA, sizeof(sta_data_t)); // Fill with pattern
         memset(test_sta2, 0xBB, sizeof(sta_data_t)); // Fill with different pattern
-        snprintf(test_sta1->sta_mac, sizeof(test_sta1->sta_mac), "aa:bb:cc:dd:ee:f%d", apIndex);
-        snprintf(test_sta2->sta_mac, sizeof(test_sta2->sta_mac), "bb:cc:dd:ee:ff:%02x", apIndex+1);
-        test_sta1->ap_index = apIndex;
-        test_sta2->ap_index = apIndex + 100; // Different value to verify
+        
+        // Set MAC addresses - cast to char* for snprintf
+        snprintf((char *)test_sta1->sta_mac, sizeof(test_sta1->sta_mac), "aa:bb:cc:dd:ee:f%d", apIndex);
+        snprintf((char *)test_sta2->sta_mac, sizeof(test_sta2->sta_mac), "bb:cc:dd:ee:ff:%02x", apIndex+1);
         
         snprintf(test_key1, sizeof(test_key1), "test_sta1_%d", apIndex);
         snprintf(test_key2, sizeof(test_key2), "test_sta2_%d", apIndex);
