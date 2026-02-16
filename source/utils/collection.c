@@ -195,10 +195,16 @@ void *hash_map_get(hash_map_t *map, const char *key)
 {
     hash_element_t *he;
     element_t *e;
+    char buf[256];
+    size_t len;
 
     if (map == NULL || map->queue == NULL) {
         return NULL;
     }
+    
+    len = key ? strlen(key) : 0;
+    snprintf(buf, sizeof(buf), "len=%zu key=%s\n", len, key);
+    wifi_hal_dbg_print("%s:%d hash_map_get debug: %s", __func__, __LINE__, buf);
     e = map->queue->head;
     if (e == NULL) {
         return NULL;
@@ -375,9 +381,11 @@ void  hash_map_cleanup(hash_map_t *map)
         he = (hash_element_t *) e->data;
         if(he != NULL) {
             if (he->data != NULL) {
+                wifi_hal_dbg_print("%s:%d NTesting FREEING: he->data=%p\n", __func__, __LINE__, he->data);
                 free(he->data);
             }
             if (he->key != NULL) {
+                wifi_hal_dbg_print("%s:%d NTesting FREEING: he->key=%s\n", __func__, __LINE__, he->key);
                 free(he->key);
             }
             free(he);

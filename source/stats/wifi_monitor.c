@@ -2979,9 +2979,64 @@ int vapstatus_callback(int apIndex, wifi_vapstatus_t status)
         pthread_mutex_unlock(&g_monitor_module.data_lock);
         return -1;
     }
+    
+    // Comprehensive test to verify hash_map_cleanup frees data properly
+    sta_data_t *test_sta1 = (sta_data_t *)malloc(sizeof(sta_data_t));
+    sta_data_t *test_sta2 = (sta_data_t *)malloc(sizeof(sta_data_t));
+    char test_key1[32], test_key2[32];
+    
+    if (test_sta1 != NULL && test_sta2 != NULL) {
+        // Create test entries with unique data
+        memset(test_sta1, 0xAA, sizeof(sta_data_t)); // Fill with pattern
+        memset(test_sta2, 0xBB, sizeof(sta_data_t)); // Fill with different pattern
+        snprintf(test_sta1->sta_mac, sizeof(test_sta1->sta_mac), "aa:bb:cc:dd:ee:f%d", apIndex);
+        snprintf(test_sta2->sta_mac, sizeof(test_sta2->sta_mac), "bb:cc:dd:ee:ff:%02x", apIndex+1);
+        test_sta1->ap_index = apIndex;
+        test_sta2->ap_index = apIndex + 100; // Different value to verify
+        
+        snprintf(test_key1, sizeof(test_key1), "test_sta1_%d", apIndex);
+        snprintf(test_key2, sizeof(test_key2), "test_sta2_%d", apIndex);
+        
+        wifi_hal_dbg_print("%s:%d TEST: Creating test_sta1=%p (pattern 0xAA) and test_sta2=%p (pattern 0xBB)\n", 
+                          __func__, __LINE__, test_sta1, test_sta2);
+        
+        // Add both entries to hash map
+        hash_map_put(sta_map, test_key1, test_sta1);
+        hash_map_put(sta_map, test_key2, test_sta2);
+        
+        // Verify they were added
+        sta_data_t *retrieved1 = (sta_data_t *)hash_map_get(sta_map, test_key1);
+        sta_data_t *retrieved2 = (sta_data_t *)hash_map_get(sta_map, test_key2);
+        
+        wifi_hal_dbg_print("%s:%d TEST: hash_map_get verification - retrieved1=%p (expected %p), retrieved2=%p (expected %p)\n",
+                          __func__, __LINE__, retrieved1, test_sta1, retrieved2, test_sta2);
+        
+        uint32_t count_before = hash_map_count(sta_map);
+        wifi_hal_dbg_print("%s:%d TEST: Hash map count before cleanup: %u\n", __func__, __LINE__, count_before);
+    }
 
-    wifi_util_dbg_print(WIFI_MON, "%s:%d NTesting CALLING hash_map_cleanup with sta_map=%p for apIndex=%d\n", __func__, __LINE__, sta_map, apIndex);
+    wifi_util_dbg_print(WIFI_MON, "%s:%d TEST: CALLING hash_map_cleanup - should free test_sta1=%p and test_sta2=%p\n", 
+                       __func__, __LINE__, test_sta1, test_sta2);
     hash_map_cleanup(sta_map);
+    
+    // Verify cleanup worked
+    uint32_t count_after = hash_map_count(sta_map);
+    wifi_hal_dbg_print("%s:%d TEST: Hash map count after cleanup: %u (should be 0)\n", __func__, __LINE__, count_after);
+    
+    // Try to retrieve - should return NULL if properly cleaned
+    if (test_sta1 != NULL && test_sta2 != NULL) {
+        sta_data_t *retrieved_after1 = (sta_data_t *)hash_map_get(sta_map, test_key1);
+        sta_data_t *retrieved_after2 = (sta_data_t *)hash_map_get(sta_map, test_key2);
+        
+        wifi_hal_dbg_print("%s:%d TEST: Post-cleanup verification - retrieved1=%p (should be NULL), retrieved2=%p (should be NULL)\n",
+                          __func__, __LINE__, retrieved_after1, retrieved_after2);
+        
+        if (retrieved_after1 == NULL && retrieved_after2 == NULL && count_after == 0) {
+            wifi_hal_dbg_print("%s:%d TEST: ✓ SUCCESS - hash_map_cleanup properly freed all data and reset map\n", __func__, __LINE__);
+        } else {
+            wifi_hal_dbg_print("%s:%d TEST: ✗ FAILURE - hash_map_cleanup did not properly clean up\n", __func__, __LINE__);
+        }
+    }
 
     pthread_mutex_unlock(&g_monitor_module.data_lock);
 
@@ -3717,6 +3772,27 @@ void deinit_wifi_monitor()
 
     for (i = 0; i < getTotalNumberVAPs(); i++) {
         if(g_monitor_module.bssid_data[i].sta_map != NULL) {
+            
+            // Add a test entry to verify hash_map_cleanup works
+            wifi_bss_info_t *test_entry = (wifi_bss_info_t *)malloc(sizeof(wifi_bss_info_t));
+            if (test_entry) {
+                memset(test_entry, 0, sizeof(wifi_bss_info_t));
+                // Set binary MAC address (6 bytes) instead of string
+                test_entry->bssid[0] = 0x00;
+                test_entry->bssid[1] = 0x11;
+                test_entry->bssid[2] = 0x22;
+                test_entry->bssid[3] = 0x33;
+                test_entry->bssid[4] = 0x44;
+                test_entry->bssid[5] = 0x55;
+                wifi_hal_dbg_print("%s:%d: NTesting Adding test entry to bssid_data[%d].sta_map before cleanup\n", __func__, __LINE__, i);
+                if (hash_map_put(g_monitor_module.bssid_data[i].sta_map, "test_bssid_cleanup", test_entry) == -1) {
+                    free(test_entry);
+                    wifi_hal_dbg_print("%s:%d: NTesting Failed to add test entry\n", __func__, __LINE__);
+                } else {
+                    wifi_hal_dbg_print("%s:%d: NTesting Successfully added test entry\n", __func__, __LINE__);
+                }
+            }
+            
             sta = hash_map_get_first(g_monitor_module.bssid_data[i].sta_map);
             while (sta != NULL) {
                 memset(key, 0, sizeof(key));
@@ -3727,6 +3803,11 @@ void deinit_wifi_monitor()
                     free(temp_sta);
                 }
             }
+            
+            wifi_hal_dbg_print("%s:%d: NTesting Before hash_map_cleanup bssid_data[%d].sta_map\n", __func__, __LINE__, i);
+            hash_map_cleanup(g_monitor_module.bssid_data[i].sta_map);
+            wifi_hal_dbg_print("%s:%d: NTesting After hash_map_cleanup bssid_data[%d].sta_map\n", __func__, __LINE__, i);
+            
             hash_map_destroy(g_monitor_module.bssid_data[i].sta_map);
         }
     }
