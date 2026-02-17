@@ -1607,7 +1607,6 @@ void clear_sta_counters(unsigned int vap_index)
 
 static void update_subscribe_data(wifi_monitor_data_t *event)
 {
-    printf("%s:%d ENTRY: event=%p, stats_type=%d\n", __func__, __LINE__, event, event ? event->u.collect_stats.stats_type : -1);
     hash_map_t *collector_list = NULL;
     wifi_mon_stats_descriptor_t *stat_desc = NULL;
     wifi_mon_collector_element_t *collector_elem = NULL;
