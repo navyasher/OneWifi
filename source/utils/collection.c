@@ -162,9 +162,9 @@ int8_t hash_map_put(hash_map_t *map, const char *key, void *data)
     hash_element_t *e;
     char *dup_key = NULL;
 
-    wifi_util_error_print(WIFI_UTIL, "%s:%d NTesting ENTRY: map=%p, key=%s, data=%p\n", __func__, __LINE__, map, key ? key : "NULL", data);
+    wifi_util_error_print(WIFI_CTRL, "%s:%d NTesting ENTRY: map=%p, key=%s, data=%p\n", __func__, __LINE__, map, key ? key : "NULL", data);
     if (map == NULL || map->queue == NULL || key == NULL || data == NULL) {
-        wifi_util_error_print(WIFI_UTIL, "%s:%d NTesting ERROR: Invalid parameters\n", __func__, __LINE__);
+        wifi_util_error_print(WIFI_CTRL, "%s:%d NTesting ERROR: Invalid parameters\n", __func__, __LINE__);
         return -1;
     }
 
@@ -184,12 +184,12 @@ int8_t hash_map_put(hash_map_t *map, const char *key, void *data)
     e->data = data;
     
     if (queue_push(map->queue, e) < 0) {
-        wifi_util_error_print(WIFI_UTIL, "%s:%d NTesting ERROR: queue_push failed\n", __func__, __LINE__);
+        wifi_util_error_print(WIFI_CTRL, "%s:%d NTesting ERROR: queue_push failed\n", __func__, __LINE__);
         free(dup_key);
         free(e);
         return -1;
     }
-    wifi_util_error_print(WIFI_UTIL, "%s:%d Ntesting EXIT: Successfully added key=%s\n", __func__, __LINE__, key);
+    wifi_util_error_print(WIFI_CTRL, "%s:%d Ntesting EXIT: Successfully added key=%s\n", __func__, __LINE__, key);
     return 0;
 }
 void *hash_map_get(hash_map_t *map, const char *key)
@@ -205,7 +205,7 @@ void *hash_map_get(hash_map_t *map, const char *key)
     
     len = key ? strlen(key) : 0;
     snprintf(buf, sizeof(buf), "len=%zu key=%s\n", len, key);
-    wifi_util_error_print(WIFI_UTIL, "%s:%d hash_map_get debug: %s", __func__, __LINE__, buf);
+    wifi_util_error_print(WIFI_CTRL, "%s:%d hash_map_get debug: %s", __func__, __LINE__, buf);
     e = map->queue->head;
     if (e == NULL) {
         return NULL;
@@ -370,10 +370,10 @@ void  hash_map_cleanup(hash_map_t *map)
     hash_element_t *he;
     element_t    *e, *tmp;
     
-    wifi_util_error_print(WIFI_UTIL, "%s:%d NTesting ENTRY: map=%p\n", __func__, __LINE__, map);
+    wifi_util_error_print(WIFI_CTRL, "%s:%d NTesting ENTRY: map=%p\n", __func__, __LINE__, map);
     
     if (map == NULL || map->queue == NULL || map->queue->head == NULL) {
-        wifi_util_error_print(WIFI_UTIL, "%s:%d NTesting EXIT: Early return due to NULL parameters\n", __func__, __LINE__);
+        wifi_util_error_print(WIFI_CTRL, "%s:%d NTesting EXIT: Early return due to NULL parameters\n", __func__, __LINE__);
         return;
     }
     e = map->queue->head;
@@ -382,11 +382,11 @@ void  hash_map_cleanup(hash_map_t *map)
         he = (hash_element_t *) e->data;
         if(he != NULL) {
             if (he->data != NULL) {
-                wifi_util_error_print(WIFI_UTIL, "%s:%d NTesting FREEING: he->data=%p\n", __func__, __LINE__, he->data);
+                wifi_util_error_print(WIFI_CTRL, "%s:%d NTesting FREEING: he->data=%p\n", __func__, __LINE__, he->data);
                 free(he->data);
             }
             if (he->key != NULL) {
-                wifi_util_error_print(WIFI_UTIL, "%s:%d NTesting FREEING: he->key=%s\n", __func__, __LINE__, he->key);
+                wifi_util_error_print(WIFI_CTRL, "%s:%d NTesting FREEING: he->key=%s\n", __func__, __LINE__, he->key);
                 free(he->key);
             }
             free(he);
@@ -396,7 +396,7 @@ void  hash_map_cleanup(hash_map_t *map)
     }
     map->queue->head = NULL;
     map->queue->count = 0;
-    wifi_util_error_print(WIFI_UTIL, "%s:%d EXIT: Cleanup completed\n", __func__, __LINE__);
+    wifi_util_error_print(WIFI_CTRL, "%s:%d EXIT: Cleanup completed\n", __func__, __LINE__);
     return;
 }
 
@@ -411,7 +411,7 @@ void  hash_map_destroy    (hash_map_t *map)
 
 hash_map_t *hash_map_clone(hash_map_t *src_map, size_t data_size)
 {
-    wifi_util_error_print(WIFI_UTIL, "%s:%d ENTRY: src_map=%p, data_size=%zu\n", __func__, __LINE__, src_map, data_size);
+    wifi_util_error_print(WIFI_CTRL, "%s:%d ENTRY: src_map=%p, data_size=%zu\n", __func__, __LINE__, src_map, data_size);
     element_t *e;
     hash_element_t *he;
     hash_map_t *dst_map;
