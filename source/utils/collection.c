@@ -23,6 +23,7 @@
 #include <assert.h>
 #include "collection.h"
 #include "wifi_hal.h"
+#include "wifi_util.h"
 
 
 queue_t *queue_create   (void)
