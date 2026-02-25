@@ -145,7 +145,7 @@ static sm_survey_t* survey_alloc(sm_survey_cache_t *cache, sm_survey_id_t survey
         survey->offchan.old_stats = NULL;
         survey->onchan.is_updated = false;
         survey->offchan.is_updated = false;
-        hash_map_put(cache->surveys, strdup(survey_id), survey);
+        hash_map_put(cache->surveys, survey_id, survey);
     }
     return survey;
 }

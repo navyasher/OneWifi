@@ -886,7 +886,7 @@ void test_mesh_subdoc_change(webconfig_consumer_t *consumer)
             memset(acl_entry, 0, (sizeof(acl_entry_t)));
 
             memcpy(&acl_entry->mac, mac, sizeof(mac_address_t));
-            hash_map_put(rdk_vap->acl_map, strdup(test_mac), acl_entry);
+            hash_map_put(rdk_vap->acl_map, test_mac, acl_entry);
         }
 
         // clearing the descriptor and raw json data
@@ -976,7 +976,7 @@ void test_macfilter_subdoc_change(webconfig_consumer_t *consumer)
             memset(acl_entry, 0, (sizeof(acl_entry_t)));
 
             memcpy(&acl_entry->mac, mac, sizeof(mac_address_t));
-            hash_map_put(rdk_vap->acl_map, strdup(test_mac), acl_entry);
+            hash_map_put(rdk_vap->acl_map, test_mac, acl_entry);
         }
 
         // clearing the descriptor and raw json data

@@ -69,7 +69,7 @@ static he_bus_error_t bus_component_param_init(he_bus_mgr_t *bus_mgr, he_bus_han
         bus_handle_obj->sub_map = hash_map_create();
         INIT_HANDLE_MUTEX(bus_handle_obj->handle_mutex);
 
-        hash_map_put(bus_mgr->bus_main_handle, strdup(component_name), bus_handle_obj);
+        hash_map_put(bus_mgr->bus_main_handle, component_name, bus_handle_obj);
         he_bus_core_info_print("%s:%d bus object is initialized for %s: id:%d\r\n", __func__,
             __LINE__, component_name, bus_handle_obj->component_id);
     } else {
@@ -741,7 +741,7 @@ void save_existing_sub_entries_cb(element_node_t *node, traversal_cb_param_t par
         sizeof(node_element_persistent_data_t));
 
     element_data->subscriptions = node->subscriptions;
-    hash_map_put(param.u.node_data, strdup(node->full_name), element_data);
+    hash_map_put(param.u.node_data, node->full_name, element_data);
     he_bus_core_dbg_print("save_existing_subscriptions_entries:%s\r\n", node->full_name);
     node->subscriptions = NULL;
 }
@@ -881,7 +881,7 @@ int save_bus_sub_event_entries(he_bus_handle_t handle, hash_map_t *sub_map,
         p_sub_data->interval = sub_data_map->interval;
         p_sub_data->sub_cb_table = sub_data_map->handler;
         p_sub_data->socket_fd = conn_info->fd;
-        hash_map_put(sub_map, strdup(event_name), p_sub_data);
+        hash_map_put(sub_map, event_name, p_sub_data);
         he_bus_core_info_print("%s:%d new sub entry added for [%s]:%p\r\n", __func__, __LINE__,
             event_name, p_sub_data);
     }

@@ -749,7 +749,7 @@ void cac_mgmt_frame_event(wifi_app_t *app, frame_data_t *msg, int type)
         elem->uplink_rate_avg = 0;
         elem->num_frames = 1;
         elem->seconds_alive = 5;
-        hash_map_put(req_map, strdup(mac_str), elem);
+        hash_map_put(req_map, mac_str, elem);
     } else {
         threshold_breached = false;
         elem->num_frames++;
@@ -1057,7 +1057,7 @@ int cac_event_hal_assoc_device(wifi_app_t *apps, void *arg)
         sta_info->snr_avg = assoc_data->dev_stats.cli_SNR;
         sta_info->uplink_rate_avg = assoc_data->dev_stats.cli_LastDataUplinkRate;
         memcpy(sta_info->sta_mac, assoc_data->dev_stats.cli_MACAddress, sizeof(mac_address_t));
-        hash_map_put(sta_map, strdup(client_mac), sta_info);
+        hash_map_put(sta_map, client_mac, sta_info);
     } else {
         sta_info->ap_index = assoc_data->ap_index;
         memcpy(sta_info->sta_mac, assoc_data->dev_stats.cli_MACAddress, sizeof(mac_address_t));

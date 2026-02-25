@@ -363,7 +363,7 @@ int sm_report_config_task(wifi_app_t *app, wifi_mon_stats_request_state_t state,
 
         wifi_util_dbg_print(WIFI_SM, "%s:%d: added timer task %d with interval=%d, count=%d\n",
                             __func__, __LINE__, report_task->task_id, config->reporting_interval, config->reporting_count);
-        hash_map_put(app->data.u.sm_data.report_tasks_map, strdup(config->stats_cfg_id), report_task);
+        hash_map_put(app->data.u.sm_data.report_tasks_map, config->stats_cfg_id, report_task);
     } else {
         report_task_cleanup(report_task, config);
 

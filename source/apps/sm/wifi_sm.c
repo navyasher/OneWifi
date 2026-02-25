@@ -758,7 +758,7 @@ int handle_sm_webconfig_event(wifi_app_t *app, wifi_event_t *event)
                 }
                 memset(cur_stats_cfg, 0, sizeof(stats_config_t));
                 memcpy(cur_stats_cfg, new_stats_cfg, sizeof(stats_config_t));
-                hash_map_put(cur_app_stats_cfg_map, strdup(cur_stats_cfg->stats_cfg_id),
+                hash_map_put(cur_app_stats_cfg_map, cur_stats_cfg->stats_cfg_id,
                     cur_stats_cfg);
                 // Notification for new entry.
                 if (!(!off_scan_rfc && cur_stats_cfg->survey_type == survey_type_off_channel &&

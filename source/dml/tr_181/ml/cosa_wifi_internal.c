@@ -276,7 +276,7 @@ void psm_get_mac_list_entry(hash_map_t *psm_mac_map, unsigned int instance_numbe
             str_tolower(temp_psm_mac_param->mac);
             temp_psm_mac_param->data_index = index;
             wifi_util_dbg_print(WIFI_PSM,"psm get mac is %s\n", str);
-            hash_map_put(psm_mac_map, strdup(temp_psm_mac_param->mac), temp_psm_mac_param);
+            hash_map_put(psm_mac_map, temp_psm_mac_param->mac, temp_psm_mac_param);
         } else {
             free(temp_psm_mac_param);
             wifi_util_dbg_print(WIFI_PSM,"[Failure] psm record_name: %s\n", recName);

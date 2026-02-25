@@ -605,7 +605,7 @@ he_bus_error_t process_bus_sub_event(he_bus_handle_t handle, int socket_fd, char
                     __func__, __LINE__, p_obj_data->data.data_type, p_obj_data->name);
                 return he_bus_error_invalid_input;
             }
-            hash_map_put(node->subscriptions, strdup(comp_name), p_sub_data);
+            hash_map_put(node->subscriptions, comp_name, p_sub_data);
             he_bus_core_info_print(
                 "%s:%d successfully added to sub map:%s::%s[%p] stream_id:%d\r\n", __func__,
                 __LINE__, comp_name, p_obj_data->name, p_sub_data, socket_fd);

@@ -225,7 +225,7 @@ int services_mgr_init(wifi_ctrl_t *ctrl, rdk_wifi_radio_t *radio_config, wifi_ha
 
     for (i = 0; i < num_svcs; i++) {
         if ((svc = create_service(svcs_mgr, radio_config, hal_cap, service)) != NULL) {
-            hash_map_put(svcs_mgr->svcs_map, strdup(service->name), svc);
+            hash_map_put(svcs_mgr->svcs_map, service->name, svc);
         }
         service++;
     }

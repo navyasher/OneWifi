@@ -36,7 +36,7 @@ int save_connection_info(hash_map_t *conn_info_map, he_bus_connection_info_t *co
     char key[32] = { 0 };
 
     snprintf(key, sizeof(key), "%d", conn_info->fd);
-    hash_map_put(conn_info_map, strdup(key), conn_info);
+    hash_map_put(conn_info_map, key, conn_info);
     return HE_BUS_RETURN_OK;
 }
 

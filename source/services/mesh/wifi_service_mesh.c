@@ -193,7 +193,7 @@ int mesh_service_create_nodes(wifi_service_t *svc, rdk_wifi_radio_t *radio_confi
 
             wifi_util_info_print(WIFI_SERVICES,"%s:%d: node: %s initialized\n", __func__, __LINE__, node_name);
 
-            hash_map_put(svc->nodes, strdup(node_name), svc_node);
+            hash_map_put(svc->nodes, node_name, svc_node);
         }
     }
     return 0;

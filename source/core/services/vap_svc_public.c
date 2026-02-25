@@ -122,7 +122,7 @@ void process_prefer_private_mac_filter(mac_address_t prefer_private_mac)
                    __func__, __LINE__, rdk_vap_info->vap_index, new_mac_str);
             }
 
-            hash_map_put(rdk_vap_info->acl_map, strdup(new_mac_str), acl_entry);
+            hash_map_put(rdk_vap_info->acl_map, new_mac_str, acl_entry);
             snprintf(macfilterkey, sizeof(macfilterkey), "%s-%s", rdk_vap_info->vap_name, new_mac_str);
             get_wifidb_obj()->desc.update_wifi_macfilter_config_fn(macfilterkey, acl_entry, true);
             wifi_util_dbg_print(WIFI_CTRL,"add %s mac to %s\n",new_mac_str,rdk_vap_info->vap_name);
