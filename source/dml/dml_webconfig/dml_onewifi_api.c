@@ -385,7 +385,10 @@ void existing_assoc_list_update(webconfig_subdoc_decoded_data_t *params)
                         }
                     } else if (temp_assoc_dev_data->client_state == client_state_connected) {
                         if (dml_temp_assoc_data == NULL) {
-                            hash_map_put(*dml_assoc_dev_map, strdup(key), temp_assoc_dev_data);
+                            if (hash_map_put(*dml_assoc_dev_map, strdup(key), temp_assoc_dev_data) == -1) {
+                                wifi_util_error_print(WIFI_DMCLI, "%s:%d: hash_map_put failed\n", __func__, __LINE__);
+                                continue;
+                            }
                             continue;
                         } else {
                             memcpy(dml_temp_assoc_data, temp_assoc_dev_data, sizeof(assoc_dev_data_t));

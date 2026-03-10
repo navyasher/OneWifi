@@ -3493,7 +3493,10 @@ bool macfilter_set_param_string_value(void *obj_ins_context, char *param_name, s
                 wifi_util_error_print(WIFI_DMCLI,"%s:%d NULL Pointer\n", __func__, __LINE__);
                 return false;
             }
-            hash_map_put(*acl_device_map, strdup(output_value->buff), acl_entry);
+            if (hash_map_put(*acl_device_map, strdup(output_value->buff), acl_entry) == -1) {
+                wifi_util_error_print(WIFI_DMCLI, "%s:%d: hash_map_put failed\n", __func__, __LINE__);
+                return false;
+            }
 
             if (*acl_new_entry_queue == NULL) {
                 wifi_util_error_print(WIFI_DMCLI,"%s:%d NULL Pointer\n", __func__, __LINE__);

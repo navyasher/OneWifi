@@ -758,8 +758,11 @@ int handle_sm_webconfig_event(wifi_app_t *app, wifi_event_t *event)
                 }
                 memset(cur_stats_cfg, 0, sizeof(stats_config_t));
                 memcpy(cur_stats_cfg, new_stats_cfg, sizeof(stats_config_t));
-                hash_map_put(cur_app_stats_cfg_map, strdup(cur_stats_cfg->stats_cfg_id),
-                    cur_stats_cfg);
+                if (hash_map_put(cur_app_stats_cfg_map, strdup(cur_stats_cfg->stats_cfg_id),
+                    cur_stats_cfg) == -1) {
+                    wifi_util_error_print(WIFI_SM, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+                    return RETURN_ERR;
+                }
                 // Notification for new entry.
                 if (!(!off_scan_rfc && cur_stats_cfg->survey_type == survey_type_off_channel &&
                         (cur_stats_cfg->radio_type == WIFI_FREQUENCY_5_BAND ||

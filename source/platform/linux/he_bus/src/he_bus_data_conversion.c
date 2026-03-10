@@ -587,8 +587,8 @@ he_bus_error_t process_bus_sub_event(he_bus_handle_t handle, int socket_fd, char
         he_bus_core_info_print("%s:%d fetch comp from sub map:%s curr stream id:%d\r\n", __func__,
             __LINE__, comp_name, socket_fd);
         ELM_LOCK(node->element_mutex);
-        p_sub_data = hash_map_get(node->subscriptions, comp_name);
-        if (p_sub_data == NULL) {
+        p_sub_data = hash_map_get(node->subscrip hash_map_put failedtions, comp_name);
+         if (p_sub_data == NULL) {
             p_sub_data = he_bus_calloc(1, sizeof(subscription_element_t));
 
             strncpy(p_sub_data->component_name, comp_name, strlen(comp_name) + 1);
@@ -605,7 +605,11 @@ he_bus_error_t process_bus_sub_event(he_bus_handle_t handle, int socket_fd, char
                     __func__, __LINE__, p_obj_data->data.data_type, p_obj_data->name);
                 return he_bus_error_invalid_input;
             }
-            hash_map_put(node->subscriptions, strdup(comp_name), p_sub_data);
+            if (hash_map_put(node->subscriptions, strdup(comp_name), p_sub_data) == -1) {
+                ELM_UNLOCK(node->element_mutex);
+                he_bus_core_error_print("%s:%d hash_map_put failed\r\n", __func__, __LINE__);
+                return he_bus_error_out_of_resources;
+            }
             he_bus_core_info_print(
                 "%s:%d successfully added to sub map:%s::%s[%p] stream_id:%d\r\n", __func__,
                 __LINE__, comp_name, p_obj_data->name, p_sub_data, socket_fd);

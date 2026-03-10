@@ -1701,7 +1701,10 @@ int add_acl_entry_to_vap(char *mac_str, int vap_index, int reason, long long int
         return RETURN_ERR;
     }
 
-    hash_map_put(rdk_vap_info->acl_map, strdup(mac_str), acl_entry);
+    if (hash_map_put(rdk_vap_info->acl_map, strdup(mac_str), acl_entry) == -1) {
+        wifi_util_error_print(WIFI_CTRL, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+        return RETURN_ERR;
+    }
 
     snprintf(macfilterkey, sizeof(macfilterkey), "%s-%s", rdk_vap_info->vap_name, mac_str);
     get_wifidb_obj()->desc.update_wifi_macfilter_config_fn(macfilterkey, acl_entry, true);
@@ -1921,7 +1924,10 @@ int add_client_diff_assoclist(hash_map_t **diff_map, char *mac,  assoc_dev_data_
                 return RETURN_ERR;
             }
             memcpy(tmp_assoc_dev_data, assoc_dev_data, sizeof(assoc_dev_data_t));
-            hash_map_put(*diff_map, strdup(mac), tmp_assoc_dev_data);
+            if (hash_map_put(*diff_map, strdup(mac), tmp_assoc_dev_data) == -1) {
+                wifi_util_error_print(WIFI_CTRL, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+                return RETURN_ERR;
+            }
         } else {
             wifi_util_info_print(WIFI_CTRL,"%s:%d assoclist of mac : %s is already present\n", __func__, __LINE__,  mac);
             memcpy(tmp_assoc_dev_data, assoc_dev_data, sizeof(assoc_dev_data_t));
@@ -2165,7 +2171,11 @@ void process_assoc_device_event(void *data)
             return;
         }
         str_tolower(mac_str);
-        hash_map_put(rdk_vap_info->associated_devices_map, strdup(mac_str), tmp_assoc_dev_data);
+        if (hash_map_put(rdk_vap_info->associated_devices_map, strdup(mac_str), tmp_assoc_dev_data) == -1) {
+            wifi_util_error_print(WIFI_CTRL, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+            pthread_mutex_unlock(rdk_vap_info->associated_devices_lock);
+            return;
+        }
         p_wifi_mgr->ctrl.webconfig_state |= ctrl_webconfig_state_associated_clients_cfg_rsp_pending;
         new_count = old_count + 1;
         wifi_util_info_print(WIFI_CTRL,"%s:%d Device %s associated with vapindex %d associated clients count : %d\n", __func__, __LINE__, mac_str, rdk_vap_info->vap_index, new_count);

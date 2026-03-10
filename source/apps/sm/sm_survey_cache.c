@@ -145,7 +145,10 @@ static sm_survey_t* survey_alloc(sm_survey_cache_t *cache, sm_survey_id_t survey
         survey->offchan.old_stats = NULL;
         survey->onchan.is_updated = false;
         survey->offchan.is_updated = false;
-        hash_map_put(cache->surveys, strdup(survey_id), survey);
+        if (hash_map_put(cache->surveys, strdup(survey_id), survey) == -1) {
+            wifi_util_error_print(WIFI_SM, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+            return NULL;
+        }
     }
     return survey;
 }

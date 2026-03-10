@@ -90,7 +90,10 @@ csi_analytics_data_t *add_new_hash_map_entry(hash_map_t *csi_analytics_map, char
         wifi_util_error_print(WIFI_APPS, "%s:%d csi analytics calloc failed\n", __func__, __LINE__);
         return NULL;
     }
-    hash_map_put(csi_analytics_map, strdup(key), csi_info);
+    if (hash_map_put(csi_analytics_map, strdup(key), csi_info) == -1) {
+        wifi_util_error_print(WIFI_APPS, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+        return NULL;
+    }
     return csi_info;
 }
 

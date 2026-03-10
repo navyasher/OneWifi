@@ -116,7 +116,10 @@ void process_eap_data(wifi_8021x_data_t *data, wifi_8021x_t *module, bool new_ev
         }
 
         gettimeofday(&data->packet_time, NULL);
-        hash_map_put(module->bssid[data->vap].sta_map, strdup(mac_str), data);
+        if (hash_map_put(module->bssid[data->vap].sta_map, strdup(mac_str), data) == -1) {
+            wifi_util_error_print(WIFI_MON, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+            return;
+        }
     }
 
     if (data->dir == wifi_direction_unknown) {

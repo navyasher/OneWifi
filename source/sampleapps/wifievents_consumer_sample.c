@@ -483,8 +483,10 @@ void csi_data_in_json_format(mac_address_t sta_mac, wifi_csi_data_t *csi)
     if (ptr == NULL) {
         ptr = calloc(1, sizeof(stalist_map_info_t));
         VERIFY_NULL_CHECK(ptr);
-        hash_map_put(p_csi_json_obj->stalist_array_map,
-            strdup(str_sta_mac), ptr);
+        if (hash_map_put(p_csi_json_obj->stalist_array_map, strdup(str_sta_mac), ptr) == -1) {
+            wifi_util_error_print(WIFI_APPS, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+            return;
+        }
     }
 
     if (ptr->sta_json_arr_obj == NULL) {

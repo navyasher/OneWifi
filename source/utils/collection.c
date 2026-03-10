@@ -160,12 +160,26 @@ int8_t hash_map_put(hash_map_t *map, char *key, void *data)
     hash_element_t *e;
     
     if (map == NULL || map->queue == NULL || key == NULL) {
+        if (key != NULL) {
+            free(key);
+            key = NULL;
+        }
+        if (data != NULL) {
+            free(data);
+            data = NULL;
+        }
         return -1;
     }
 
     map->itr = NULL;
     e = (hash_element_t *)malloc(sizeof(hash_element_t));
     if (e == NULL) {
+        free(key);
+        key = NULL;
+        if (data != NULL) {
+            free(data);
+            data = NULL;
+        }
         return -1;
     }
     memset(e, 0, sizeof(hash_element_t));

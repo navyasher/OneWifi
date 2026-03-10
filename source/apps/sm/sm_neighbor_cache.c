@@ -100,7 +100,10 @@ static sm_neighbor_t* neighbor_alloc(sm_neighbor_cache_t *cache, sm_neighbor_id_
         memcpy(neighbor->id, neighbor_id, sizeof(sm_neighbor_id_t));
         ds_dlist_init(&neighbor->onchan.samples,  dpp_neighbor_record_list_t, node);
         ds_dlist_init(&neighbor->offchan.samples, dpp_neighbor_record_list_t, node);
-        hash_map_put(cache->neighbors, strdup(neighbor_id), neighbor);
+        if (hash_map_put(cache->neighbors, strdup(neighbor_id), neighbor) == -1) {
+            wifi_util_error_print(WIFI_SM, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+            return NULL;
+        }
     }
     return neighbor;
 }

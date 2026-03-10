@@ -749,7 +749,10 @@ void cac_mgmt_frame_event(wifi_app_t *app, frame_data_t *msg, int type)
         elem->uplink_rate_avg = 0;
         elem->num_frames = 1;
         elem->seconds_alive = 5;
-        hash_map_put(req_map, strdup(mac_str), elem);
+        if (hash_map_put(req_map, strdup(mac_str), elem) == -1) {
+            wifi_util_error_print(WIFI_APPS, "%s:%d: Failed to add element to req_map\n", __func__, __LINE__);
+            return RETURN_ERR;
+        }
     } else {
         threshold_breached = false;
         elem->num_frames++;

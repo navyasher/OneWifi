@@ -1116,8 +1116,11 @@ int handle_sta_client_info(wifi_app_t *app, void *data)
         strncpy(cli_data->client_type, sta_info->client_type, sizeof(cli_data->client_type));
         cli_data->client_type[sizeof(cli_data->client_type) - 1] = '\0';
 
-        hash_map_put(client_type_info.sta_client_type.client_type_map, strdup(client_mac),
-            cli_data);
+        if (hash_map_put(client_type_info.sta_client_type.client_type_map, strdup(client_mac),
+            cli_data) == -1) {
+            wifi_util_error_print(WIFI_EM, "%s:%d: hash_map_put failed\n", __func__, __LINE__);
+            return RETURN_ERR;
+        }
         wifi_util_dbg_print(WIFI_EM, "%s:%d Client Type Updated to stats cache [%s]\n",
             __func__, __LINE__, cli_data->client_type);
     }

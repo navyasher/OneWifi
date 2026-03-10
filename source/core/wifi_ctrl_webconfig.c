@@ -2023,7 +2023,10 @@ int webconfig_hal_mac_filter_apply(wifi_ctrl_t *ctrl, webconfig_subdoc_decoded_d
                         memset(temp_acl_entry, 0, (sizeof(acl_entry_t)));
                         memcpy(temp_acl_entry, new_acl_entry, sizeof(acl_entry_t));
 
-                        hash_map_put(current_config->acl_map,strdup(new_mac_str),temp_acl_entry);
+                        if (hash_map_put(current_config->acl_map,strdup(new_mac_str),temp_acl_entry) == -1) {
+                            wifi_util_error_print(WIFI_MGR, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+                            return RETURN_ERR;
+                        }
                         snprintf(macfilterkey, sizeof(macfilterkey), "%s-%s", current_config->vap_name, new_mac_str);
 
                         wifidb_update_wifi_macfilter_config(macfilterkey, temp_acl_entry, true);

@@ -318,7 +318,11 @@ int execute_assoc_client_stats_api(wifi_mon_collector_element_t *c_elem, wifi_mo
                     memcpy(hal_sta->cli_MACAddress, hal_sta->cli_MLDAddr, sizeof(mac_address_t));
                     sta->primary_link = 0;
                 }
-                hash_map_put(sta_map, strdup(sta_key), sta);
+                if (hash_map_put(sta_map, strdup(sta_key), sta) == -1) {
+                    wifi_util_error_print(WIFI_MON, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+                    pthread_mutex_unlock(&mon_data->data_lock);
+                    return RETURN_ERR;
+                }
                 sta->last_connected_time.tv_sec = tv_now.tv_sec;
                 sta->last_connected_time.tv_nsec = tv_now.tv_nsec;
             } else {

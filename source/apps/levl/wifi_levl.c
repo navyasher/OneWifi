@@ -261,7 +261,10 @@ void apps_probe_req_frame_event(wifi_app_t *app, frame_data_t *msg)
         memset(elem, 0, sizeof(probe_req_elem_t));
         memcpy(&elem->msg_data, msg, sizeof(frame_data_t));
         memcpy(elem->mac_str, mac_str, sizeof(mac_addr_str_t));
-        hash_map_put(app->data.u.levl.probe_req_map, strdup(mac_str), elem);
+        if (hash_map_put(app->data.u.levl.probe_req_map, strdup(mac_str), elem) == -1) {
+            wifi_util_error_print(WIFI_APPS, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+            return;
+        }
         elem->curr_alive_time_sec = get_current_time_in_sec();
         wifi_util_info_print(WIFI_APPS,"%s:%d wifi mgmt probe frame message for %s time:%ld\r\n", __func__, __LINE__, mac_str, elem->curr_alive_time_sec);
     } else {
@@ -494,7 +497,10 @@ static int schedule_mac_for_sounding(int ap_index, mac_address_t mac_address, in
 
     if (wifi_app->data.u.levl.paused) {
         wifi_util_info_print(WIFI_APPS,"%s:%d Speed test in progress, pushing to control map\n", __func__, __LINE__);
-        hash_map_put(p_map, strdup(mac_str), levl_sc_data);
+        if (hash_map_put(p_map, strdup(mac_str), levl_sc_data) == -1) {
+            wifi_util_error_print(WIFI_APPS, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+            return -1;
+        }
         return 0;
     }
 
@@ -514,7 +520,10 @@ static int schedule_mac_for_sounding(int ap_index, mac_address_t mac_address, in
         levl_sc_data->ap_index = ap_index;
         if (csi_app->data.u.csi.csi_fns.csi_start_fn(csi_app, ap_index, mac_address, wifi_app_inst_levl) < 0) {
             wifi_util_dbg_print(WIFI_APPS,"%s:%d Unable to schedule sounding for the client, pushing to pending list.\n", __func__, __LINE__);
-            hash_map_put(p_map, strdup(mac_str), levl_sc_data);
+            if (hash_map_put(p_map, strdup(mac_str), levl_sc_data) == -1) {
+                wifi_util_error_print(WIFI_APPS, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+                return -1;
+            }
             if ((hash_map_count(curr_map) == 0) && (wifi_app->data.u.levl.postpone_sched_handler_id == 0)) {
                 scheduler_add_timer_task(ctrl->sched, FALSE, &(wifi_app->data.u.levl.postpone_sched_handler_id),
                    process_levl_postpone_sounding, wifi_app, 2000, 1, FALSE);
@@ -526,12 +535,18 @@ static int schedule_mac_for_sounding(int ap_index, mac_address_t mac_address, in
 
         scheduler_add_timer_task(ctrl->sched, FALSE, &(levl_sc_data->sched_handler_id),
                 process_levl_sounding_timeout, t_data, levl_sc_data->duration, 1, FALSE);
-        hash_map_put(curr_map, strdup(mac_str), levl_sc_data);
+        if (hash_map_put(curr_map, strdup(mac_str), levl_sc_data) == -1) {
+            wifi_util_error_print(WIFI_APPS, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+            return -1;
+        }
     } else {
         //Push MAC to pending queue
         wifi_util_dbg_print(WIFI_APPS,"%s:%d Pushing to Pending list MAC %02x:%02x:%02x:%02x:%02x:%02x\n", __func__, __LINE__,
                            mac_address[0],mac_address[1],mac_address[2],mac_address[3],mac_address[4],mac_address[5]);
-        hash_map_put(p_map, strdup(mac_str), levl_sc_data);
+        if (hash_map_put(p_map, strdup(mac_str), levl_sc_data) == -1) {
+            wifi_util_error_print(WIFI_APPS, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+            return -1;
+        }
     }
     return RETURN_OK;
 }
@@ -913,7 +928,9 @@ int process_csi_stop_levl(wifi_app_t *app)
         levl_csi_status_publish(&app->handle, levl_sched_data->mac_addr, 0);
         levl_sched_data = hash_map_get_next(app->data.u.levl.curr_sounding_mac_map, levl_sched_data);
         tmp_data = (levl_sched_data_t *)hash_map_remove(app->data.u.levl.curr_sounding_mac_map, mac_str);
-        hash_map_put(app->data.u.levl.pending_mac_map, strdup(mac_str), tmp_data);
+        if (hash_map_put(app->data.u.levl.pending_mac_map, strdup(mac_str), tmp_data) == -1) {
+            wifi_util_error_print(WIFI_APPS, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+        }
     }
     return 0;
 }
