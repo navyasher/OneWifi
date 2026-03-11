@@ -430,7 +430,11 @@ int analytics_event_hal_assoc_device(wifi_app_t *apps, void *arg)
         sta_info = malloc(sizeof(analytics_sta_info_t));
         sta_info->ap_index = assoc_data->ap_index;
         memcpy(sta_info->sta_mac, assoc_data->dev_stats.cli_MACAddress, sizeof(mac_address_t));
-        hash_map_put(sta_map, strdup(client_mac), sta_info);
+        if (hash_map_put(sta_map, strdup(client_mac), sta_info) == -1) {
+            wifi_util_error_print(WIFI_APPS, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+            free(sta_info);
+            return RETURN_ERR;
+        }
     } else {
         sta_info->ap_index = assoc_data->ap_index;
         memcpy(sta_info->sta_mac, assoc_data->dev_stats.cli_MACAddress, sizeof(mac_address_t));

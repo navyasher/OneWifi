@@ -1316,7 +1316,12 @@ int webconfig_stats_config_apply(wifi_ctrl_t *ctrl, webconfig_subdoc_decoded_dat
                 }
                 memset(mgr_stats_config, 0, sizeof(stats_config_t));
                 memcpy(mgr_stats_config, dec_stats_config, sizeof(stats_config_t));
-                hash_map_put(mgr_cfg_map, strdup(mgr_stats_config->stats_cfg_id), mgr_stats_config);
+                if (hash_map_put(mgr_cfg_map, strdup(mgr_stats_config->stats_cfg_id), mgr_stats_config) == -1) {
+                    wifi_util_dbg_print(WIFI_CTRL,"%s %d hash_map_put failed\n", __func__, __LINE__);
+                    free(mgr_stats_config);
+                    ret = RETURN_ERR;
+                    goto free_data;
+                }
                 //Notification for new entry
                 //notify_observer(mgr_stats_config);
             } else {
@@ -1411,7 +1416,12 @@ int webconfig_steering_clients_apply(wifi_ctrl_t *ctrl, webconfig_subdoc_decoded
                 }
                 memset(mgr_steering_client, 0, sizeof(band_steering_clients_t));
                 memcpy(mgr_steering_client, dec_steering_client, sizeof(band_steering_clients_t));
-                hash_map_put(mgr_cfg_map, strdup(mgr_steering_client->steering_client_id), mgr_steering_client);
+                if (hash_map_put(mgr_cfg_map, strdup(mgr_steering_client->steering_client_id), mgr_steering_client) == -1) {
+                    wifi_util_dbg_print(WIFI_MGR,"%s %d hash_map_put failed\n", __func__, __LINE__);
+                    free(mgr_steering_client);
+                    ret = RETURN_ERR;
+                    goto free_data;
+                }
                 //notify_observer(mgr_steering_client);
             } else {
                 memcpy(mgr_steering_client, dec_steering_client, sizeof(band_steering_clients_t));
@@ -1505,7 +1515,12 @@ int webconfig_steering_config_apply(wifi_ctrl_t *ctrl, webconfig_subdoc_decoded_
                 }
                 memset(mgr_steer_config, 0, sizeof(steering_config_t));
                 memcpy(mgr_steer_config, dec_steer_config, sizeof(steering_config_t));
-                hash_map_put(mgr_cfg_map, strdup(mgr_steer_config->steering_cfg_id), mgr_steer_config);
+                if (hash_map_put(mgr_cfg_map, strdup(mgr_steer_config->steering_cfg_id), mgr_steer_config) == -1) {
+                    wifi_util_dbg_print(WIFI_MGR,"%s %d hash_map_put failed\n", __func__, __LINE__);
+                    free(mgr_steer_config);
+                    ret = RETURN_ERR;
+                    goto free_data;
+                }
                 //notify_observer(mgr_steer_config);
             } else {
                 memcpy(mgr_steer_config, dec_steer_config, sizeof(steering_config_t));
@@ -1597,7 +1612,12 @@ int webconfig_vif_neighbors_apply(wifi_ctrl_t *ctrl, webconfig_subdoc_decoded_da
                 }
                 memset(mgr_vif_neighbors, 0, sizeof(vif_neighbors_t));
                 memcpy(mgr_vif_neighbors, dec_vif_neighbors, sizeof(vif_neighbors_t));
-                hash_map_put(mgr_cfg_map, strdup(mgr_vif_neighbors->neighbor_id), mgr_vif_neighbors);
+                if (hash_map_put(mgr_cfg_map, strdup(mgr_vif_neighbors->neighbor_id), mgr_vif_neighbors) == -1) {
+                    wifi_util_dbg_print(WIFI_MGR,"%s %d hash_map_put failed\n", __func__, __LINE__);
+                    free(mgr_vif_neighbors);
+                    ret = RETURN_ERR;
+                    goto free_data;
+                }
                 //notify_observer(mgr_vif_neighbors);
             } else {
                 memcpy(mgr_vif_neighbors, dec_vif_neighbors, sizeof(vif_neighbors_t));
@@ -2023,7 +2043,11 @@ int webconfig_hal_mac_filter_apply(wifi_ctrl_t *ctrl, webconfig_subdoc_decoded_d
                         memset(temp_acl_entry, 0, (sizeof(acl_entry_t)));
                         memcpy(temp_acl_entry, new_acl_entry, sizeof(acl_entry_t));
 
-                        hash_map_put(current_config->acl_map,strdup(new_mac_str),temp_acl_entry);
+                        if (hash_map_put(current_config->acl_map,strdup(new_mac_str),temp_acl_entry) == -1) {
+                            wifi_util_error_print(WIFI_MGR, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+                            free(temp_acl_entry);
+                            return RETURN_ERR;
+                        }
                         snprintf(macfilterkey, sizeof(macfilterkey), "%s-%s", current_config->vap_name, new_mac_str);
 
                         wifidb_update_wifi_macfilter_config(macfilterkey, temp_acl_entry, true);

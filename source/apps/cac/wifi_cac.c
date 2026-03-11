@@ -749,7 +749,13 @@ void cac_mgmt_frame_event(wifi_app_t *app, frame_data_t *msg, int type)
         elem->uplink_rate_avg = 0;
         elem->num_frames = 1;
         elem->seconds_alive = 5;
-        hash_map_put(req_map, strdup(mac_str), elem);
+        if (hash_map_put(req_map, strdup(mac_str), elem) == -1) {
+            wifi_util_error_print(WIFI_APPS, "%s:%d: Failed to add element to req_map\n", __func__, __LINE__);
+            if (elem != NULL) {
+                free(elem);
+            }
+            return RETURN_ERR;
+        }
     } else {
         threshold_breached = false;
         elem->num_frames++;
@@ -1057,7 +1063,11 @@ int cac_event_hal_assoc_device(wifi_app_t *apps, void *arg)
         sta_info->snr_avg = assoc_data->dev_stats.cli_SNR;
         sta_info->uplink_rate_avg = assoc_data->dev_stats.cli_LastDataUplinkRate;
         memcpy(sta_info->sta_mac, assoc_data->dev_stats.cli_MACAddress, sizeof(mac_address_t));
-        hash_map_put(sta_map, strdup(client_mac), sta_info);
+        if (hash_map_put(sta_map, strdup(client_mac), sta_info) == -1) {
+            wifi_util_error_print(WIFI_APPS, "%s:%d: Failed to add element to sta_map\n", __func__, __LINE__);
+            free(sta_info);
+            return RETURN_ERR;
+        }
     } else {
         sta_info->ap_index = assoc_data->ap_index;
         memcpy(sta_info->sta_mac, assoc_data->dev_stats.cli_MACAddress, sizeof(mac_address_t));

@@ -260,8 +260,12 @@ int em_client_stats_store(unsigned int radio_index, unsigned int vap_index, int 
         }
 
         memcpy(new_stats, dev3, sizeof(wifi_associated_dev3_t));
-        hash_map_put(em_ap_metrics_report_cache.radio_report[radio_index].ap_data[arr_vap_index].client_stats_map,
-            strdup(key), new_stats);
+        if (hash_map_put(em_ap_metrics_report_cache.radio_report[radio_index].ap_data[arr_vap_index].client_stats_map,
+            strdup(key), new_stats) == -1) {
+            wifi_util_error_print(WIFI_EM, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+            free(new_stats);
+            return RETURN_ERR;
+        }
     } else {
         memcpy(stats, dev3, sizeof(wifi_associated_dev3_t));
     }
@@ -1116,8 +1120,12 @@ int handle_sta_client_info(wifi_app_t *app, void *data)
         strncpy(cli_data->client_type, sta_info->client_type, sizeof(cli_data->client_type));
         cli_data->client_type[sizeof(cli_data->client_type) - 1] = '\0';
 
-        hash_map_put(client_type_info.sta_client_type.client_type_map, strdup(client_mac),
-            cli_data);
+        if (hash_map_put(client_type_info.sta_client_type.client_type_map, strdup(client_mac),
+            cli_data) == -1) {
+            wifi_util_error_print(WIFI_EM, "%s:%d: hash_map_put failed\n", __func__, __LINE__);
+            free(cli_data);
+            return RETURN_ERR;
+        }
         wifi_util_dbg_print(WIFI_EM, "%s:%d Client Type Updated to stats cache [%s]\n",
             __func__, __LINE__, cli_data->client_type);
     }

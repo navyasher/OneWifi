@@ -138,7 +138,11 @@ int csi_start_fn(void* csi_app, unsigned int ap_index, mac_addr_t mac_addr, int 
             to_hash_map->subscribed_apps |= sounding_app;
             wifi_util_info_print(WIFI_APPS, "%s:%d Enabling CSI for mac %02x..%02x\n", __func__, __LINE__, to_hash_map->mac_addr[0], to_hash_map->mac_addr[5]);
             wifi_enableCSIEngine(ap_index, (unsigned char *)mac_addr, TRUE);
-            hash_map_put(app->data.u.csi.csi_sounding_mac_map, strdup(mac_str), to_hash_map);
+            if (hash_map_put(app->data.u.csi.csi_sounding_mac_map, strdup(mac_str), to_hash_map) == -1) {
+                wifi_util_error_print(WIFI_APPS, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+                free(to_hash_map);
+                return -1;
+            }
             app->data.u.csi.num_current_sounding++;
             update_pinger_config(ap_index, mac_addr, false);
             return 0;

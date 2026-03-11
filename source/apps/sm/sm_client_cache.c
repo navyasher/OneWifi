@@ -69,7 +69,11 @@ static inline sm_client_t* client_alloc(sm_client_cache_t *cache, sm_client_id_t
     if (client) {
         memcpy(client->id, client_id, sizeof(sm_client_id_t));
         ds_dlist_init(&client->samples, dpp_client_record_t, node);
-        hash_map_put(cache->clients, strdup(client_id), client);
+        if (hash_map_put(cache->clients, strdup(client_id), client) == -1) {
+            wifi_util_error_print(WIFI_SM, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+            free(client);
+            return NULL;
+        }
     }
     return client;
 }

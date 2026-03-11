@@ -1668,7 +1668,11 @@ int upload_client_telemetry_data(wifi_app_t *app, unsigned int num_devs, unsigne
                     return RETURN_ERR;
                 }
                 // MAC not found, so use the last used data as 0
-                hash_map_put(app->data.u.whix.last_stats_map, strdup(sta_key), dev_stats_last);
+                if (hash_map_put(app->data.u.whix.last_stats_map, strdup(sta_key), dev_stats_last) == -1) {
+                    wifi_util_error_print(WIFI_APPS, "%s:%d: Failed to add dev_stats_last to last_stats_map\n", __func__, __LINE__);
+                    free(dev_stats_last);
+                    return RETURN_ERR;
+                }
             }
             if (sta[i].dev_stats.cli_Active == true) {
                 del = calculate_counter_delta(sta[i].dev_stats.cli_BytesSent,
