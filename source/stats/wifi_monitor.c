@@ -1158,7 +1158,11 @@ sta_data_t *create_sta_data_hash_map(hash_map_t *sta_map, mac_addr_t l_sta_mac)
     }
     memset(sta, 0, sizeof(sta_data_t));
     memcpy(sta->sta_mac, l_sta_mac, sizeof(mac_addr_t));
-    hash_map_put(sta_map, strdup(to_mac_str(l_sta_mac, mac_str)), sta);
+    if (hash_map_put(sta_map, strdup(to_mac_str(l_sta_mac, mac_str)), sta) == -1) {
+        wifi_util_error_print(WIFI_MON, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+        pthread_mutex_unlock(&g_monitor_module.data_lock);
+        return NULL;
+    }
     pthread_mutex_unlock(&g_monitor_module.data_lock);
     return sta;
 }
@@ -4261,7 +4265,7 @@ int coordinator_create_task(wifi_mon_collector_element_t **collector_elem, wifi_
         return RETURN_ERR;
     }
 
-    if (hash_map_put((*collector_elem)->provider_list, key_copy, provider_elem) != 0) {
+    if (hash_map_put((*collector_elem)->provider_list, key_copy, provider_elem) == -1) {
         wifi_util_error_print(WIFI_MON, "%s:%d: hash_map_put failed\n", __func__,__LINE__);
         coordinator_free_provider_elem(&provider_elem);
         return RETURN_ERR;

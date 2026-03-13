@@ -1701,7 +1701,10 @@ int add_acl_entry_to_vap(char *mac_str, int vap_index, int reason, long long int
         return RETURN_ERR;
     }
 
-    hash_map_put(rdk_vap_info->acl_map, strdup(mac_str), acl_entry);
+    if (hash_map_put(rdk_vap_info->acl_map, strdup(mac_str), acl_entry) == -1) {
+        wifi_util_error_print(WIFI_CTRL, "%s:%d hash_map_put failed\n", __func__, __LINE__);
+        return RETURN_ERR;
+    }
 
     snprintf(macfilterkey, sizeof(macfilterkey), "%s-%s", rdk_vap_info->vap_name, mac_str);
     get_wifidb_obj()->desc.update_wifi_macfilter_config_fn(macfilterkey, acl_entry, true);
