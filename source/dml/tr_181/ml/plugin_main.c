@@ -393,12 +393,21 @@ COSA_MemoryCheck
         void
     )
 {
+    ANSC_STATUS                     returnStatus            = ANSC_STATUS_SUCCESS;
     PCOSA_PLUGIN_INFO               pPlugInfo               = (PCOSA_PLUGIN_INFO)g_pCosaBEManager->hCosaPluginInfo;
 
     /* unload the memory here */
 
-    CosaBackEndManagerRemove(g_pCosaBEManager);
-    g_pCosaBEManager = NULL;
+    returnStatus  =  CosaBackEndManagerRemove(g_pCosaBEManager);
+        
+    if ( returnStatus == ANSC_STATUS_SUCCESS )
+    {
+        g_pCosaBEManager = NULL;
+    }
+    else
+    {
+        g_pCosaBEManager = NULL;
+    }
 
     COSA_MemoryUsage();
     COSA_MemoryTable();
