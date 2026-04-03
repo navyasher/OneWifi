@@ -754,8 +754,7 @@ void test_null_subdoc_change(webconfig_consumer_t *consumer)
         free(str);
     }
     
-    free(data);
-    data = NULL;
+    webconfig_data_free(&data);
 }
 
 static int secure_rand_mod(int mod)
@@ -779,7 +778,7 @@ static int secure_rand_mod(int mod)
 
 void test_mesh_sta_subdoc_change(webconfig_consumer_t *consumer)
 {
-    webconfig_subdoc_data_t data;
+    webconfig_subdoc_data_t *data;
     webconfig_error_t ret=webconfig_error_none;
 
     char *str;
@@ -796,39 +795,43 @@ void test_mesh_sta_subdoc_change(webconfig_consumer_t *consumer)
     if (enable_ovsdb == true) {
     } else {
 
-        memcpy((unsigned char *)data.u.decoded.radios, (unsigned char *)consumer->radios, consumer->hal_cap.wifi_prop.numRadios*sizeof(rdk_wifi_radio_t));
-        memcpy((unsigned char *)&data.u.decoded.hal_cap, (unsigned char *)&consumer->hal_cap, sizeof(wifi_hal_capability_t));
+        memcpy((unsigned char *)data->u.decoded.radios, (unsigned char *)consumer->radios, consumer->hal_cap.wifi_prop.numRadios*sizeof(rdk_wifi_radio_t));
+        memcpy((unsigned char *)&data->u.decoded.hal_cap, (unsigned char *)&consumer->hal_cap, sizeof(wifi_hal_capability_t));
 
-        if (parse_subdoc_input_param(consumer, &data) != RETURN_OK) {
+        if (parse_subdoc_input_param(consumer, data) != RETURN_OK) {
             wifi_vap_info_t *vap_info;
 
-            vap_info = get_wifi_radio_vap_info(&data.u.decoded.radios[0], "mesh_sta");
+            vap_info = get_wifi_radio_vap_info(&data->u.decoded.radios[0], "mesh_sta");
             if (vap_info == NULL) {
                 printf("%s:%d: vap_info is NULL \n", __func__, __LINE__);
+                webconfig_data_free(data);
+                free(data);
                 return;
             }
             vap_info->u.sta_info.scan_params.period = secure_rand_mod(10);
             vap_info = get_wifi_radio_vap_info(&data->u.decoded.radios[1], "mesh_sta");
             if (vap_info == NULL) {
                 printf("%s:%d: vap_info is NULL \n", __func__, __LINE__);
+                webconfig_data_free(data);
+                free(data);
                 return;
             }
             vap_info->u.sta_info.scan_params.period = secure_rand_mod(10);
         }
 
         // clearing the descriptor and raw json data
-        data.descriptor =  0;
-        if (data.u.encoded.raw != NULL) {
-            free(data.u.encoded.raw);
-            data.u.encoded.raw = NULL;
+        data->descriptor =  0;
+        if (data->u.encoded.raw != NULL) {
+            free(data->u.encoded.raw);
+            data->u.encoded.raw = NULL;
         }
         printf("%s:%d: start webconfig_encode\n", __func__, __LINE__);
-        data.u.decoded.num_radios = consumer->hal_cap.wifi_prop.numRadios;
+        data->u.decoded.num_radios = consumer->hal_cap.wifi_prop.numRadios;
 
-        ret = webconfig_encode(&consumer->webconfig, &data,
+        ret = webconfig_encode(&consumer->webconfig, data,
                 webconfig_subdoc_type_mesh_sta);
         if (ret == webconfig_error_none) {
-            str = data.u.encoded.raw;
+            str = data->u.encoded.raw;
         }
     }
 
@@ -849,11 +852,14 @@ void test_mesh_sta_subdoc_change(webconfig_consumer_t *consumer)
     if (str != NULL) {
         free(str);
     }
+    
+    webconfig_data_free(data);
+    free(data);
 }
 
 void test_mesh_subdoc_change(webconfig_consumer_t *consumer)
 {
-    webconfig_subdoc_data_t data;
+    webconfig_subdoc_data_t *data;
     webconfig_error_t ret=webconfig_error_none;
     char test_mac[18];
     rdk_wifi_vap_info_t *rdk_vap;
@@ -875,32 +881,34 @@ void test_mesh_subdoc_change(webconfig_consumer_t *consumer)
     if (enable_ovsdb == true) {
     } else {
 
-        memcpy((unsigned char *)data.u.decoded.radios, (unsigned char *)consumer->radios, consumer->hal_cap.wifi_prop.numRadios*sizeof(rdk_wifi_radio_t));
-        memcpy((unsigned char *)&data.u.decoded.hal_cap, (unsigned char *)&consumer->hal_cap, sizeof(wifi_hal_capability_t));
+        memcpy((unsigned char *)data->u.decoded.radios, (unsigned char *)consumer->radios, consumer->hal_cap.wifi_prop.numRadios*sizeof(rdk_wifi_radio_t));
+        memcpy((unsigned char *)&data->u.decoded.hal_cap, (unsigned char *)&consumer->hal_cap, sizeof(wifi_hal_capability_t));
 
-        if (parse_subdoc_input_param(consumer, &data) != RETURN_OK) {
+        if (parse_subdoc_input_param(consumer, data) != RETURN_OK) {
             int radio_0_bssMaxSta;
             wifi_vap_info_t *vap_info;
 
-            data.u.decoded.radios[0].oper.channel = 4;
-            data.u.decoded.radios[1].oper.channel = 36;
-            vap_info = get_wifi_radio_vap_info(&data.u.decoded.radios[0], "mesh_backhaul");
+            data->u.decoded.radios[0].oper.channel = 4;
+            data->u.decoded.radios[1].oper.channel = 36;
+            vap_info = get_wifi_radio_vap_info(&data->u.decoded.radios[0], "mesh_backhaul");
             /* set to different value from current to force a change */
             if (vap_info->u.bss_info.bssMaxSta == 5) {
                 vap_info->u.bss_info.bssMaxSta = radio_0_bssMaxSta = 6;
             } else {
                 vap_info->u.bss_info.bssMaxSta = radio_0_bssMaxSta = 5;
             }
-            vap_info = get_wifi_radio_vap_info(&data.u.decoded.radios[1], "mesh_backhaul");
+            vap_info = get_wifi_radio_vap_info(&data->u.decoded.radios[1], "mesh_backhaul");
             vap_info->u.bss_info.bssMaxSta = (radio_0_bssMaxSta == 6) ? 5 : 6;
-            vap_info = get_wifi_radio_vap_info(&data.u.decoded.radios[0], "mesh_sta");
+            vap_info = get_wifi_radio_vap_info(&data->u.decoded.radios[0], "mesh_sta");
             vap_info->u.sta_info.scan_params.period = 2;
-            vap_info = get_wifi_radio_vap_info(&data.u.decoded.radios[1], "mesh_sta");
+            vap_info = get_wifi_radio_vap_info(&data->u.decoded.radios[1], "mesh_sta");
             vap_info->u.sta_info.scan_params.period = 2;
 
-            rdk_vap = get_wifi_radio_rdkvap_info(&data.u.decoded.radios[0], "mesh_backhaul");
+            rdk_vap = get_wifi_radio_rdkvap_info(&data->u.decoded.radios[0], "mesh_backhaul");
             if ((rdk_vap == NULL)) {
                 printf("%s:%d: rdk_vap is null\n", __func__, __LINE__);
+                webconfig_data_free(data);
+                free(data);
                 return;
             }
 
@@ -910,6 +918,8 @@ void test_mesh_subdoc_change(webconfig_consumer_t *consumer)
             acl_entry = (acl_entry_t *)malloc(sizeof(acl_entry_t));
             if (acl_entry == NULL) {
                 printf("%s:%d NULL Pointer \n", __func__, __LINE__);
+                webconfig_data_free(data);
+                free(data);
                 return;
             }
             memset(acl_entry, 0, (sizeof(acl_entry_t)));
@@ -919,18 +929,18 @@ void test_mesh_subdoc_change(webconfig_consumer_t *consumer)
         }
 
         // clearing the descriptor and raw json data
-        data.descriptor =  0;
-        if (data.u.encoded.raw != NULL) {
-            free(data.u.encoded.raw);
-            data.u.encoded.raw = NULL;
+        data->descriptor =  0;
+        if (data->u.encoded.raw != NULL) {
+            free(data->u.encoded.raw);
+            data->u.encoded.raw = NULL;
         }
         printf("%s:%d: start webconfig_encode\n", __func__, __LINE__);
-        data.u.decoded.num_radios = consumer->hal_cap.wifi_prop.numRadios;
+        data->u.decoded.num_radios = consumer->hal_cap.wifi_prop.numRadios;
 
-        ret = webconfig_encode(&consumer->webconfig, &data,
+        ret = webconfig_encode(&consumer->webconfig, data,
                 webconfig_subdoc_type_mesh);
         if (ret == webconfig_error_none) {
-            str = data.u.encoded.raw;
+            str = data->u.encoded.raw;
         }
     }
 
@@ -951,6 +961,9 @@ void test_mesh_subdoc_change(webconfig_consumer_t *consumer)
     if (str != NULL) {
         free(str);
     }
+    
+    webconfig_data_free(data);
+    free(data);
 }
 
 
