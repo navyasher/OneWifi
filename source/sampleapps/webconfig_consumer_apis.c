@@ -980,12 +980,7 @@ void test_macfilter_subdoc_change(webconfig_consumer_t *consumer)
     char *str;
     str = NULL;
 
-    data = (webconfig_subdoc_data_t*)malloc(sizeof(webconfig_subdoc_data_t));
-    if (data == NULL) {
-        printf("%s:%d: Failed to allocate memory\n", __func__, __LINE__);
-        return;
-    }
-    memset(data, 0, sizeof(webconfig_subdoc_data_t));
+    memset(&data, 0, sizeof(webconfig_subdoc_data_t));
 
     snprintf(test_mac, sizeof(test_mac), "%02x:%02x:%02x:%02x:%02x:%02x", 0xaa, 0xbb,0xcc,0xdd, secure_rand_mod(25), secure_rand_mod(50));
 
