@@ -759,6 +759,12 @@ void test_null_subdoc_change(webconfig_consumer_t *consumer)
         }
     }
 
+    if (str == NULL) {
+        free(data);
+        data = NULL;
+        return;
+    }
+
     if (ret == webconfig_error_none) {
         printf("%s:%d: webconfig consumer null vap start test\n", __func__, __LINE__);
         dump_subdoc(str, webconfig_subdoc_type_null);
@@ -769,10 +775,7 @@ void test_null_subdoc_change(webconfig_consumer_t *consumer)
         printf("%s:%d: Webconfig set failed\n", __func__, __LINE__);
     }
 
-    if (str != NULL) {
-        free(str);
-    }
-    
+    free(str); 
     free(data);
     data = NULL;
 }
@@ -838,6 +841,12 @@ void test_mesh_sta_subdoc_change(webconfig_consumer_t *consumer)
         }
     }
 
+    if (str == NULL) {
+        free(data);
+        data = NULL;
+        return;
+    }
+
     if (ret == webconfig_error_none) {
         printf("%s:%d: webconfig consumer mesh sta vap start test\n", __func__, __LINE__);
         dump_subdoc(str, webconfig_subdoc_type_mesh_sta);
@@ -852,10 +861,7 @@ void test_mesh_sta_subdoc_change(webconfig_consumer_t *consumer)
         printf("%s:%d: Webconfig set failed\n", __func__, __LINE__);
     }
 
-    if (str != NULL) {
-        free(str);
-    }
-    
+    free(str);
     free(data);
     data = NULL;
 }
@@ -949,6 +955,12 @@ void test_mesh_subdoc_change(webconfig_consumer_t *consumer)
         }
     }
 
+    if (str == NULL) {
+        free(data);
+        data = NULL;
+        return;
+    }
+
     if (ret == webconfig_error_none) {
         printf("%s:%d: webconfig consumer mesh vap start test\n", __func__, __LINE__);
         dump_subdoc(str, webconfig_subdoc_type_mesh);
@@ -963,10 +975,7 @@ void test_mesh_subdoc_change(webconfig_consumer_t *consumer)
         printf("%s:%d: Webconfig set failed\n", __func__, __LINE__);
     }
 
-    if (str != NULL) {
-        free(str);
-    }
-    
+    free(str);  
     free(data);
     data = NULL;
 }
@@ -1051,6 +1060,12 @@ void test_macfilter_subdoc_change(webconfig_consumer_t *consumer)
         }
     }
 
+    if (str == NULL) {
+        free(data);
+        data = NULL;
+        return;
+    }
+
     if (ret == webconfig_error_none) {
         printf("%s:%d: webconfig consumer macfilter start test\n", __func__, __LINE__);
         dump_subdoc(str, webconfig_subdoc_type_mac_filter);
@@ -1065,9 +1080,7 @@ void test_macfilter_subdoc_change(webconfig_consumer_t *consumer)
         printf("%s:%d: Webconfig set failed\n", __func__, __LINE__);
     }
 
-    if (str != NULL) {
-        free(str);
-    }
+    free(str);
     
     free(data);
     data = NULL;
@@ -1094,8 +1107,6 @@ void test_vif_neighbors_subdoc_change(webconfig_consumer_t *consumer)
         printf("%s:%d: command start current time:%llu\n", __func__, __LINE__, cmd_start_time);
         rbus_setStr(consumer->rbus_handle, WIFI_WEBCONFIG_DOC_DATA_SOUTH, str);
 #endif
-    } else {
-        printf("%s:%d: Webconfig set failed\n", __func__, __LINE__);
     }
 
     if (str != NULL) {
@@ -1126,8 +1137,6 @@ void test_steeringclient_subdoc_change(webconfig_consumer_t *consumer)
         printf("%s:%d: command start current time:%llu\n", __func__, __LINE__, cmd_start_time);
         rbus_setStr(consumer->rbus_handle, WIFI_WEBCONFIG_DOC_DATA_SOUTH, str);
 #endif
-    } else {
-        printf("%s:%d: Webconfig set failed\n", __func__, __LINE__);
     }
 
     if (str != NULL) {
@@ -1157,8 +1166,6 @@ void test_steerconfig_subdoc_change(webconfig_consumer_t *consumer)
         printf("%s:%d: command start current time:%llu\n", __func__, __LINE__, cmd_start_time);
         rbus_setStr(consumer->rbus_handle, WIFI_WEBCONFIG_DOC_DATA_SOUTH, str);
 #endif
-    } else {
-        printf("%s:%d: Webconfig set failed\n", __func__, __LINE__);
     }
 
     if (str != NULL) {
@@ -1186,8 +1193,6 @@ void test_statsconfig_subdoc_change(webconfig_consumer_t *consumer)
         printf("%s:%d: command start current time:%llu\n", __func__, __LINE__, cmd_start_time);
         rbus_setStr(consumer->rbus_handle, WIFI_WEBCONFIG_DOC_DATA_SOUTH, str);
 #endif
-    } else {
-        printf("%s:%d: Webconfig set failed\n", __func__, __LINE__);
     }
 
     if (str != NULL) {
@@ -1248,6 +1253,12 @@ void test_private_subdoc_change(webconfig_consumer_t *consumer)
             str = data->u.encoded.raw;
     }
 
+    if (str == NULL) {
+        free(data);
+        data = NULL;
+        return;
+    }
+
     if (ret == webconfig_error_none) {
         printf("%s:%d: webconfig consumer private vap start test\n", __func__, __LINE__);
         dump_subdoc(str, webconfig_subdoc_type_private);
@@ -1262,9 +1273,7 @@ void test_private_subdoc_change(webconfig_consumer_t *consumer)
         printf("%s:%d: Webconfig set failed\n", __func__, __LINE__);
     }
 
-    if (str != NULL) {
-        free(str);
-    }
+    free(str);
     
     free(data);
     data = NULL;
