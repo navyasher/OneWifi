@@ -1961,6 +1961,12 @@ INSTMSMT_PH2 -->
                     </functions>
                     <parameters>
                         <parameter>
+                            <name>MLDUnit</name>
+                            <type>int[-1:24]</type>
+                            <syntax>int</syntax>
+                            <writable>true</writable>
+                        </parameter>
+                        <parameter>
                             <name>Enable</name>
                             <type>boolean</type>
                             <syntax>bool</syntax>
@@ -3081,7 +3087,7 @@ INSTMSMT_PH2 -->
                                         </parameter>
                                         <parameter>
                                             <name>CuThresholdSupported</name>
-                                            <type>string(32)</type>
+                                            <type>string(64)</type>
                                             <syntax>string</syntax>
                                             <writable>false</writable>
                                         </parameter>
