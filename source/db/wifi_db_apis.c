@@ -92,10 +92,10 @@
 #define ONEWIFI_DB_VERSION_IGNITE_FLAG 100045
 #define ONEWIFI_DB_VERSION_ENCR_GCMP_FLAG 100048
 #define ONEWIFI_DB_VERSION_ENCR_NEW_FLAG 100049
+#define ONEWIFI_DB_VERSION_TCM_PER_VAP_FLAG 100050
 
 #define IGNITE_MIN_CHUTIL_THRESHOLD  50
 #define IGNITE_MAX_CHUTIL_THRESHOLD 100
-#define IGNITE_SNR_THRESHOLD   0
 #define IGNITE_SNR_DIFFERENCE 5
 
 ovsdb_table_t table_Wifi_Radio_Config;
@@ -246,7 +246,7 @@ void callback_Wifi_Rfc_Config(ovsdb_update_monitor_t *mon, struct schema_Wifi_Rf
         wifi_util_dbg_print(WIFI_DB, "%s:%d:RFC Config New/Modify \n", __func__, __LINE__);
             wifi_util_dbg_print(WIFI_DB,"%s:%d:%d _Wifi_Rfc_Config table\n", __func__, __LINE__,new_rec->link_quality_rfc);
         pthread_mutex_lock(&g_wifidb->data_cache_lock);
-        strcpy(rfc_param->rfc_id, new_rec->rfc_id);
+        snprintf(rfc_param->rfc_id, sizeof(rfc_param->rfc_id), "%s", new_rec->rfc_id);
         rfc_param->wifipasspoint_rfc = new_rec->wifipasspoint_rfc;
         rfc_param->wifiinterworking_rfc = new_rec->wifiinterworking_rfc;
         rfc_param->radiusgreylist_rfc = new_rec->radiusgreylist_rfc;
@@ -328,14 +328,13 @@ void callback_Wifi_Ignite_Config(ovsdb_update_monitor_t *mon,
        return;
       }
 
-      wifi_util_dbg_print(WIFI_CTRL, "[%s %d] Ignite-config : [%s %d %d %d %d]\n", __func__, __LINE__, new_rec->ignite_name, new_rec->min_chanutil_threshold, new_rec->max_chanutil_threshold, new_rec->snr_threshold, new_rec->snr_difference);
+      wifi_util_dbg_print(WIFI_CTRL, "[%s %d] Ignite-config : [%s %d %d %d]\n", __func__, __LINE__, new_rec->ignite_name, new_rec->min_chanutil_threshold, new_rec->max_chanutil_threshold, new_rec->snr_difference);
       if ((mon->mon_type == OVSDB_UPDATE_NEW) || (mon->mon_type == OVSDB_UPDATE_MODIFY)) {
           wifi_util_dbg_print(WIFI_CTRL, "[%s %d] Ignite config newly added or updated\n", __func__, __LINE__);
           pthread_mutex_lock(&g_wifidb->data_cache_lock);
           strcpy(ignite_cfg->ignite_name, new_rec->ignite_name);
           ignite_cfg->min_chanutil_threshold = (float)new_rec->min_chanutil_threshold;
           ignite_cfg->max_chanutil_threshold = (float)new_rec->max_chanutil_threshold;
-          ignite_cfg->SNR_threshold = (float)new_rec->snr_threshold;
           ignite_cfg->SNR_difference = (float)new_rec->snr_difference;
           pthread_mutex_unlock(&g_wifidb->data_cache_lock);
       }
@@ -3007,19 +3006,19 @@ int wifidb_get_preassoc_ctrl_config(char *vap_name, wifi_preassoc_control_t *pre
         wifidb_print("%s:%d Table table_Wifi_Preassoc_Control_Config not found, entry count=%d \n",__func__, __LINE__, count);
         return -1;
     }
-    strcpy(preassoc->vap_name, vap_name);
-    strcpy(preassoc->rssi_up_threshold, pcfg->rssi_up_threshold);
-    strcpy(preassoc->snr_threshold, pcfg->snr_threshold);
-    strcpy(preassoc->cu_threshold, pcfg->cu_threshold);
-    strcpy(preassoc->basic_data_transmit_rates, pcfg->basic_data_transmit_rates);
-    strcpy(preassoc->operational_data_transmit_rates, pcfg->operational_data_transmit_rates);
-    strcpy(preassoc->supported_data_transmit_rates, pcfg->supported_data_transmit_rates);
-    strcpy(preassoc->minimum_advertised_mcs, pcfg->minimum_advertised_mcs);
-    strcpy(preassoc->sixGOpInfoMinRate, pcfg->sixGOpInfoMinRate);
+    snprintf(preassoc->vap_name, sizeof(preassoc->vap_name), "%s", vap_name);
+    snprintf(preassoc->rssi_up_threshold, sizeof(preassoc->rssi_up_threshold), "%s", pcfg->rssi_up_threshold);
+    snprintf(preassoc->snr_threshold, sizeof(preassoc->snr_threshold), "%s", pcfg->snr_threshold);
+    snprintf(preassoc->cu_threshold, sizeof(preassoc->cu_threshold), "%s", pcfg->cu_threshold);
+    snprintf(preassoc->basic_data_transmit_rates, sizeof(preassoc->basic_data_transmit_rates), "%s", pcfg->basic_data_transmit_rates);
+    snprintf(preassoc->operational_data_transmit_rates, sizeof(preassoc->operational_data_transmit_rates), "%s", pcfg->operational_data_transmit_rates);
+    snprintf(preassoc->supported_data_transmit_rates, sizeof(preassoc->supported_data_transmit_rates), "%s", pcfg->supported_data_transmit_rates);
+    snprintf(preassoc->minimum_advertised_mcs, sizeof(preassoc->minimum_advertised_mcs), "%s", pcfg->minimum_advertised_mcs);
+    snprintf(preassoc->sixGOpInfoMinRate, sizeof(preassoc->sixGOpInfoMinRate), "%s", pcfg->sixGOpInfoMinRate);
     preassoc->time_ms = pcfg->time_ms;
     preassoc->min_num_mgmt_frames = pcfg->min_num_mgmt_frames;
-    strcpy(preassoc->tcm_exp_weightage, pcfg->tcm_exp_weightage);
-    strcpy(preassoc->tcm_gradient_threshold, pcfg->tcm_gradient_threshold);
+    snprintf(preassoc->tcm_exp_weightage, sizeof(preassoc->tcm_exp_weightage), "%s", pcfg->tcm_exp_weightage);
+    snprintf(preassoc->tcm_gradient_threshold, sizeof(preassoc->tcm_gradient_threshold), "%s", pcfg->tcm_gradient_threshold);
     free(pcfg);
     return 0;
 }
@@ -3086,12 +3085,12 @@ int wifidb_get_postassoc_ctrl_config(char *vap_name, wifi_postassoc_control_t *p
         wifidb_print("%s:%d Table table_Wifi_Postassoc_Control_Config not found, entry count=%d \n",__func__, __LINE__, count);
         return -1;
     }
-    strcpy(postassoc->vap_name, vap_name);
-    strcpy(postassoc->rssi_up_threshold, pcfg->rssi_up_threshold);
-    strcpy(postassoc->sampling_interval, pcfg->sampling_interval);
-    strcpy(postassoc->snr_threshold, pcfg->snr_threshold);
-    strcpy(postassoc->sampling_count, pcfg->sampling_count);
-    strcpy(postassoc->cu_threshold, pcfg->cu_threshold);
+    snprintf(postassoc->vap_name, sizeof(postassoc->vap_name), "%s", vap_name);
+    snprintf(postassoc->rssi_up_threshold, sizeof(postassoc->rssi_up_threshold), "%s", pcfg->rssi_up_threshold);
+    snprintf(postassoc->sampling_interval, sizeof(postassoc->sampling_interval), "%s", pcfg->sampling_interval);
+    snprintf(postassoc->snr_threshold, sizeof(postassoc->snr_threshold), "%s", pcfg->snr_threshold);
+    snprintf(postassoc->sampling_count, sizeof(postassoc->sampling_count), "%s", pcfg->sampling_count);
+    snprintf(postassoc->cu_threshold, sizeof(postassoc->cu_threshold), "%s", pcfg->cu_threshold);
     free(pcfg);
     return 0;
 }
@@ -3280,14 +3279,12 @@ int wifidb_update_ignite_config(ignite_config_t *ignite_cfg)
     // Convert float → integer
     cfg.min_chanutil_threshold = (int)ignite_cfg->min_chanutil_threshold;
     cfg.max_chanutil_threshold = (int)ignite_cfg->max_chanutil_threshold;
-    cfg.snr_threshold = (int)ignite_cfg->SNR_threshold;
     cfg.snr_difference = (int)ignite_cfg->SNR_difference;
     wifi_util_dbg_print(WIFI_CTRL,
-            "%s:%d Ignite data → [%s %d %d %d %d]\n", __func__, __LINE__,
+            "%s:%d Ignite data → [%s %d %d %d]\n", __func__, __LINE__,
             cfg.ignite_name,
             cfg.min_chanutil_threshold,
             cfg.max_chanutil_threshold,
-            cfg.snr_threshold,
             cfg.snr_difference
             );
 
@@ -3295,7 +3292,6 @@ int wifidb_update_ignite_config(ignite_config_t *ignite_cfg)
     cfg.ignite_name_exists = true;
     cfg.min_chanutil_threshold_exists = true;
     cfg.max_chanutil_threshold_exists = true;
-    cfg.snr_threshold_exists = true;
     cfg.snr_difference_exists = true;
 
     /* clear uuid/version for insert */
@@ -3495,12 +3491,10 @@ int wifidb_get_wifi_ignite_config(ignite_config_t *ignite_cfg)
         pcfg->ignite_name,
         pcfg->min_chanutil_threshold,
         pcfg->max_chanutil_threshold,
-        pcfg->snr_threshold,
         pcfg->snr_difference);
     strncpy(ignite_cfg->ignite_name, pcfg->ignite_name, MAX_NAME_LEN);
     ignite_cfg->min_chanutil_threshold = (float)pcfg->min_chanutil_threshold;
     ignite_cfg->max_chanutil_threshold = (float)pcfg->max_chanutil_threshold;
-    ignite_cfg->SNR_threshold          = (float)pcfg->snr_threshold;
     ignite_cfg->SNR_difference         = (float)pcfg->snr_difference;
     return 0;
 }
@@ -3541,9 +3535,9 @@ int wifidb_get_wifi_global_config(wifi_global_param_t *config)
         config->vlan_cfg_version = pcfg->vlan_cfg_version;
 #ifdef FEATURE_SUPPORT_WPS
         if (strlen(pcfg->wps_pin) != 0) {
-            strncpy(config->wps_pin,pcfg->wps_pin,sizeof(config->wps_pin)-1);
+            strncpy(config->wps_pin, pcfg->wps_pin, sizeof(config->wps_pin)-1);
         } else {
-            strcpy(config->wps_pin, DEFAULT_WPS_PIN);
+            snprintf(config->wps_pin, sizeof(config->wps_pin), "%s", DEFAULT_WPS_PIN);
         }
 #endif
         config->bandsteering_enable = pcfg->bandsteering_enable;
@@ -4686,7 +4680,7 @@ int wifidb_init_interworking_config_default(int vapIndex,void /*wifi_Interworkin
     interworking.esr = 0;
     interworking.uesa = 0;
     interworking.hessOptionPresent = 1;
-    strcpy(interworking.hessid,"11:22:33:44:55:66");
+    snprintf(interworking.hessid, sizeof(interworking.hessid), "%s", "11:22:33:44:55:66");
     if (isVapHotspot(vapIndex))    //Xfinity hotspot vaps
     {
         interworking.accessNetworkType = 2;
@@ -4720,18 +4714,18 @@ int wifidb_init_preassoc_conn_ctrl_config_default(int vapIndex, wifi_preassoc_co
     wifi_mgr_t *g_wifidb = get_wifimgr_obj();
     memset((char *)&preassoc_connection_ctrl, 0, sizeof(wifi_preassoc_control_t));
     convert_vap_index_to_name(&g_wifidb->hal_cap.wifi_prop, vapIndex,vap_name);
-    strcpy(preassoc_connection_ctrl.rssi_up_threshold, "disabled");
-    strcpy(preassoc_connection_ctrl.snr_threshold, "disabled");
-    strcpy(preassoc_connection_ctrl.cu_threshold, "disabled");
-    strcpy(preassoc_connection_ctrl.basic_data_transmit_rates, "disabled");
-    strcpy(preassoc_connection_ctrl.operational_data_transmit_rates, "disabled");
-    strcpy(preassoc_connection_ctrl.supported_data_transmit_rates, "disabled");
-    strcpy(preassoc_connection_ctrl.minimum_advertised_mcs, "disabled");
-    strcpy(preassoc_connection_ctrl.sixGOpInfoMinRate, "disabled");
+    snprintf(preassoc_connection_ctrl.rssi_up_threshold, sizeof(preassoc_connection_ctrl.rssi_up_threshold), "%s", "disabled");
+    snprintf(preassoc_connection_ctrl.snr_threshold, sizeof(preassoc_connection_ctrl.snr_threshold), "%s", "disabled");
+    snprintf(preassoc_connection_ctrl.cu_threshold, sizeof(preassoc_connection_ctrl.cu_threshold), "%s", "disabled");
+    snprintf(preassoc_connection_ctrl.basic_data_transmit_rates, sizeof(preassoc_connection_ctrl.basic_data_transmit_rates), "%s","disabled");
+    snprintf(preassoc_connection_ctrl.operational_data_transmit_rates, sizeof(preassoc_connection_ctrl.operational_data_transmit_rates), "%s", "disabled");
+    snprintf(preassoc_connection_ctrl.supported_data_transmit_rates, sizeof(preassoc_connection_ctrl.supported_data_transmit_rates), "%s", "disabled");
+    snprintf(preassoc_connection_ctrl.minimum_advertised_mcs, sizeof(preassoc_connection_ctrl.minimum_advertised_mcs), "%s", "disabled");
+    snprintf(preassoc_connection_ctrl.sixGOpInfoMinRate, sizeof(preassoc_connection_ctrl.sixGOpInfoMinRate), "%s", "disabled");
     preassoc_connection_ctrl.time_ms = TCM_TIMEOUT_MS;
     preassoc_connection_ctrl.min_num_mgmt_frames = TCM_MIN_MGMT_FRAMES;
-    strcpy(preassoc_connection_ctrl.tcm_exp_weightage, TCM_WEIGHTAGE);
-    strcpy(preassoc_connection_ctrl.tcm_gradient_threshold, TCM_THRESHOLD);
+    snprintf(preassoc_connection_ctrl.tcm_exp_weightage, sizeof(preassoc_connection_ctrl.tcm_exp_weightage), "%s", TCM_WEIGHTAGE);
+    snprintf(preassoc_connection_ctrl.tcm_gradient_threshold, sizeof(preassoc_connection_ctrl.tcm_gradient_threshold), "%s", TCM_THRESHOLD);
     pthread_mutex_lock(&g_wifidb->data_cache_lock);
     memcpy(config, &preassoc_connection_ctrl, sizeof(wifi_preassoc_control_t));
     pthread_mutex_unlock(&g_wifidb->data_cache_lock);
@@ -4753,11 +4747,11 @@ int wifidb_init_postassoc_conn_ctrl_config_default(int vapIndex, wifi_postassoc_
     wifi_mgr_t *g_wifidb = get_wifimgr_obj();
     memset((char *)&postassoc_connection_ctrl, 0, sizeof(wifi_postassoc_control_t));
     convert_vap_index_to_name(&g_wifidb->hal_cap.wifi_prop, vapIndex,vap_name);
-    strcpy(postassoc_connection_ctrl.rssi_up_threshold, "disabled");
-    strcpy(postassoc_connection_ctrl.sampling_interval, "7");
-    strcpy(postassoc_connection_ctrl.snr_threshold, "disabled");
-    strcpy(postassoc_connection_ctrl.sampling_count, "3");
-    strcpy(postassoc_connection_ctrl.cu_threshold, "disabled");
+    snprintf(postassoc_connection_ctrl.rssi_up_threshold, sizeof(postassoc_connection_ctrl.rssi_up_threshold), "%s", "disabled");
+    snprintf(postassoc_connection_ctrl.sampling_interval, sizeof(postassoc_connection_ctrl.sampling_interval), "%s", "7");
+    snprintf(postassoc_connection_ctrl.snr_threshold, sizeof(postassoc_connection_ctrl.snr_threshold), "%s", "disabled");
+    snprintf(postassoc_connection_ctrl.sampling_count, sizeof(postassoc_connection_ctrl.sampling_count), "%s", "3");
+    snprintf(postassoc_connection_ctrl.cu_threshold, sizeof(postassoc_connection_ctrl.cu_threshold), "%s", "disabled");
 
     pthread_mutex_lock(&g_wifidb->data_cache_lock);
     memcpy(config, &postassoc_connection_ctrl, sizeof(wifi_postassoc_control_t));
@@ -4870,9 +4864,8 @@ static void wifidb_upgrade_wifi_ignite_config(int r_index)
         }
         g_wifidb->ignite_config[r_index].min_chanutil_threshold = IGNITE_MIN_CHUTIL_THRESHOLD;
         g_wifidb->ignite_config[r_index].max_chanutil_threshold = IGNITE_MAX_CHUTIL_THRESHOLD;
-        g_wifidb->ignite_config[r_index].SNR_threshold = IGNITE_SNR_THRESHOLD;
         g_wifidb->ignite_config[r_index].SNR_difference = IGNITE_SNR_DIFFERENCE;
-        wifi_util_dbg_print(WIFI_CTRL, "[%s %d] Ignite name [%s] Ch-util-threshold [%f %f] SNR [%f %f]\n", __func__, __LINE__, g_wifidb->ignite_config[r_index].ignite_name, g_wifidb->ignite_config[r_index].min_chanutil_threshold, g_wifidb->ignite_config[r_index].max_chanutil_threshold, g_wifidb->ignite_config[r_index].SNR_threshold, g_wifidb->ignite_config[r_index].SNR_difference);
+        wifi_util_dbg_print(WIFI_CTRL, "[%s %d] Ignite name [%s] Ch-util-threshold [%f %f] SNR [%f]\n", __func__, __LINE__, g_wifidb->ignite_config[r_index].ignite_name, g_wifidb->ignite_config[r_index].min_chanutil_threshold, g_wifidb->ignite_config[r_index].max_chanutil_threshold, g_wifidb->ignite_config[r_index].SNR_difference);
     }
     return;
 }
@@ -4883,6 +4876,7 @@ static void wifidb_global_config_upgrade()
     char strValue[256] = { 0 };
     wifi_mgr_t *g_wifidb = get_wifimgr_obj();
     wifi_ccsp_desc_t *p_ccsp_desc = &get_wificcsp_obj()->desc;
+    wifi_rfc_dml_parameters_t *rfc_param = get_wifi_db_rfc_parameters();
 
     if (g_wifidb->db_version == 0) {
         return;
@@ -4964,6 +4958,17 @@ static void wifidb_global_config_upgrade()
             DEFAULT_HEAPWALK_INTERVAL;
         g_wifidb->global_config.global_parameters.memwraptool.enable = true;
     }
+    if (g_wifidb->db_version < ONEWIFI_DB_VERSION_TCM_PER_VAP_FLAG) {
+        wifi_util_dbg_print(WIFI_DB, "%s:%d upgrade tcm config, old db version %d \n", __func__,
+            __LINE__, g_wifidb->db_version);
+        rfc_param->tcm_open_2g_rfc = true;
+        rfc_param->tcm_open_5g_rfc = true;
+        rfc_param->tcm_open_6g_rfc = true;
+        rfc_param->tcm_secure_2g_rfc = true;
+        rfc_param->tcm_secure_5g_rfc = true;
+        rfc_param->tcm_secure_6g_rfc = true;
+    }
+
 }
 
 /************************************************************************************
@@ -7199,9 +7204,8 @@ int wifidb_init_ignite_config_default(int radio_index, ignite_config_t *ignite_c
     //Configured commonly for now. Based on the radio, we can update in the above switch cases.
     local_ignite_config.min_chanutil_threshold = IGNITE_MIN_CHUTIL_THRESHOLD;
     local_ignite_config.max_chanutil_threshold = IGNITE_MAX_CHUTIL_THRESHOLD;
-    local_ignite_config.SNR_threshold = IGNITE_SNR_THRESHOLD;
     local_ignite_config.SNR_difference = IGNITE_SNR_DIFFERENCE;
-    wifi_util_dbg_print(WIFI_CTRL, "[%s %d] Ignite name [%s] Ch-util-threshold [%f %f] SNR [%f %f]\n", __func__, __LINE__, local_ignite_config.ignite_name, local_ignite_config.min_chanutil_threshold, local_ignite_config.max_chanutil_threshold, local_ignite_config.SNR_threshold, local_ignite_config.SNR_difference);
+    wifi_util_dbg_print(WIFI_CTRL, "[%s %d] Ignite name [%s] Ch-util-threshold [%f %f] SNR [%f]\n", __func__, __LINE__, local_ignite_config.ignite_name, local_ignite_config.min_chanutil_threshold, local_ignite_config.max_chanutil_threshold, local_ignite_config.SNR_difference);
     pthread_mutex_lock(&g_wifidb->data_cache_lock);
     memcpy(ignite_cfg,&local_ignite_config,sizeof(local_ignite_config));
     pthread_mutex_unlock(&g_wifidb->data_cache_lock);
@@ -7535,15 +7539,15 @@ int wifidb_init_vap_config_default(int vap_index, wifi_vap_info_t *config,
         cfg->u.sta_info.scan_params.period = 10;
         memset(ssid, 0, sizeof(ssid));
         if (wifi_hal_get_default_ssid(ssid, vap_index) == 0) {
-            strcpy(cfg->u.sta_info.ssid, ssid);
+            snprintf(cfg->u.sta_info.ssid, sizeof(cfg->u.sta_info.ssid), "%s", ssid);
         } else {
-            strcpy(cfg->u.sta_info.ssid, vap_name);
+            snprintf(cfg->u.sta_info.ssid, sizeof(cfg->u.sta_info.ssid), "%s", vap_name);
         }
         memset(password, 0, sizeof(password));
         if (wifi_hal_get_default_keypassphrase(password,vap_index) == 0) {
-            strcpy(cfg->u.sta_info.security.u.key.key, password);
+            snprintf(cfg->u.sta_info.security.u.key.key, sizeof(cfg->u.sta_info.security.u.key.key), "%s", password);
         } else {
-            strcpy(cfg->u.sta_info.security.u.key.key, INVALID_KEY);
+            snprintf(cfg->u.sta_info.security.u.key.key, sizeof(cfg->u.sta_info.security.u.key.key), "%s", INVALID_KEY);
         }
         if ((strlen(cfg->u.sta_info.security.u.key.key) < MIN_PWD_LEN) || (strlen(cfg->u.sta_info.security.u.key.key) > MAX_PWD_LEN)) {
             wifi_util_error_print(WIFI_DB, "%s:%d: Incorrect password length %d for vap '%s'\n", __func__, __LINE__, strlen(cfg->u.sta_info.security.u.key.key), vap_name);
@@ -7766,11 +7770,11 @@ int wifidb_init_vap_config_default(int vap_index, wifi_vap_info_t *config,
             cfg->u.bss_info.wps.methods = WIFI_ONBOARDINGMETHODS_PUSHBUTTON;
             memset(wps_pin, 0, sizeof(wps_pin));
             if ((wifi_hal_get_default_wps_pin(wps_pin) == RETURN_OK) && ((strlen(wps_pin) != 0))) {
-                strcpy(cfg->u.bss_info.wps.pin, wps_pin);
+                snprintf(cfg->u.bss_info.wps.pin, sizeof(cfg->u.bss_info.wps.pin), "%s", wps_pin);
             } else {
                 wifi_util_error_print(WIFI_DB, "%s:%d: Incorrect wps pin for vap '%s'\n", __func__,
                     __LINE__, vap_name);
-                strcpy(cfg->u.bss_info.wps.pin, "12345678");
+                snprintf(cfg->u.bss_info.wps.pin, sizeof(cfg->u.bss_info.wps.pin), "%s", "12345678");
             }
 #endif
         } else if (isVapHotspot(vap_index)) {
@@ -7841,31 +7845,31 @@ int wifidb_init_vap_config_default(int vap_index, wifi_vap_info_t *config,
         memset(ssid, 0, sizeof(ssid));
 
         if (wifi_hal_get_default_ssid(ssid, vap_index) == 0) {
-            strcpy(cfg->u.bss_info.ssid, ssid);
+            snprintf(cfg->u.bss_info.ssid, sizeof(cfg->u.bss_info.ssid), "%s", ssid);
 
         } else {
-           strcpy(cfg->u.bss_info.ssid, vap_name);
+           snprintf(cfg->u.bss_info.ssid, sizeof(cfg->u.bss_info.ssid), "%s", vap_name);
         }
 
         memset(password, 0, sizeof(password));
         if (wifi_hal_get_default_keypassphrase(password,vap_index) == 0) {
-            strcpy(cfg->u.bss_info.security.u.key.key, password);
+            snprintf(cfg->u.bss_info.security.u.key.key, sizeof(cfg->u.bss_info.security.u.key.key), "%s", password);
         } else {
-            strcpy(cfg->u.bss_info.security.u.key.key, INVALID_KEY);
+            snprintf(cfg->u.bss_info.security.u.key.key, sizeof(cfg->u.bss_info.security.u.key.key), "%s", INVALID_KEY);
         }
 
         if (isVapLnfSecure(vap_index)) {
             cfg->u.bss_info.enabled = true;
             cfg->u.bss_info.security.mfp = wifi_mfp_cfg_disabled;
-            strcpy(cfg->u.bss_info.security.u.radius.identity, "lnf_radius_identity");
+            snprintf(cfg->u.bss_info.security.u.radius.identity, sizeof(cfg->u.bss_info.security.u.radius.identity), "%s", "lnf_radius_identity");
             cfg->u.bss_info.security.u.radius.port = 1812;
             if (wifi_hal_get_default_radius_key(radius_key,vap_index) == 0) {
-                strcpy(cfg->u.bss_info.security.u.radius.key, radius_key);
-                strcpy(cfg->u.bss_info.security.u.radius.s_key, radius_key);
+                snprintf(cfg->u.bss_info.security.u.radius.key, sizeof(cfg->u.bss_info.security.u.radius.key), "%s", radius_key);
+                snprintf(cfg->u.bss_info.security.u.radius.s_key, sizeof(cfg->u.bss_info.security.u.radius.s_key), "%s", radius_key);
             }
             else {
-                strcpy(cfg->u.bss_info.security.u.radius.key, INVALID_KEY);
-                strcpy(cfg->u.bss_info.security.u.radius.s_key, INVALID_KEY);
+                snprintf(cfg->u.bss_info.security.u.radius.key, sizeof(cfg->u.bss_info.security.u.radius.key), "%s", INVALID_KEY);
+                snprintf(cfg->u.bss_info.security.u.radius.s_key, sizeof(cfg->u.bss_info.security.u.radius.s_key), "%s", INVALID_KEY);
             }
             memset(cfg->u.bss_info.security.u.radius.ip,0,sizeof(cfg->u.bss_info.security.u.radius.ip));
             cfg->u.bss_info.security.u.radius.s_port = 1812;
@@ -8347,7 +8351,7 @@ void init_wifidb_data()
                 pthread_mutex_unlock(&g_wifidb->data_cache_lock);
                 return;
             }
-            wifi_util_dbg_print(WIFI_CTRL, "[%s %d] Ignite entries : [%s %f %f %f %f]\n", __func__, __LINE__, ignite_cfg->ignite_name, ignite_cfg->min_chanutil_threshold, ignite_cfg->max_chanutil_threshold, ignite_cfg->SNR_threshold, ignite_cfg->SNR_difference);
+            wifi_util_dbg_print(WIFI_CTRL, "[%s %d] Ignite entries : [%s %f %f %f]\n", __func__, __LINE__, ignite_cfg->ignite_name, ignite_cfg->min_chanutil_threshold, ignite_cfg->max_chanutil_threshold, ignite_cfg->SNR_difference);
             if (wifidb_update_ignite_config(ignite_cfg) != RETURN_OK) {
                 pthread_mutex_unlock(&g_wifidb->data_cache_lock);
                 wifi_util_dbg_print(WIFI_DB,"%s:%d: Failed to update ignite config\n", __func__, __LINE__);
@@ -8455,7 +8459,7 @@ void init_wifidb_data()
             }
             wifidb_get_wifi_ignite_config(ignite_cfg); 
             wifidb_upgrade_wifi_ignite_config(r_index);        
-            wifi_util_dbg_print(WIFI_CTRL, "[%s %d] Ignite entries : [%s %f %f %f %f]\n", __func__, __LINE__, ignite_cfg->ignite_name, ignite_cfg->min_chanutil_threshold, ignite_cfg->max_chanutil_threshold, ignite_cfg->SNR_threshold, ignite_cfg->SNR_difference);
+            wifi_util_dbg_print(WIFI_CTRL, "[%s %d] Ignite entries : [%s %f %f %f]\n", __func__, __LINE__, ignite_cfg->ignite_name, ignite_cfg->min_chanutil_threshold, ignite_cfg->max_chanutil_threshold, ignite_cfg->SNR_difference);
             if (wifidb_update_ignite_config(ignite_cfg) != RETURN_OK) {
                 pthread_mutex_unlock(&g_wifidb->data_cache_lock);
                 wifi_util_error_print(WIFI_DB,"%s:%d: Failed to update ignite config\n", __func__, __LINE__);
@@ -9698,7 +9702,7 @@ int wifi_db_update_psm_values()
 }
 
 //static void bus_subscription_handler(bus_handle_t handle, bus_event_t *event,
-static void bus_subscription_handler(char *event_name, bus_data_prop_t *p_data, void *userData)
+static void bus_subscription_handler(char *event_name, raw_data_t *p_data, void *userData)
 {
     (void)p_data;
     (void)userData;
