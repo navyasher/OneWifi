@@ -483,6 +483,17 @@ wifi_util_dbg_print(WIFI_MGR,"%s:%d: Inside ssp_main\n", __func__, __LINE__);
     /*
      *  Load the start configuration
      */
+
+    /* --- OFF_T_MAX test (ULL version only - remove after verification) --- */
+    {
+#define OFF_T_MAX_ULL  ((off_t)(((1ULL << (sizeof(off_t) * 8 - 1)) - 1)))
+        wifi_util_error_print(WIFI_MGR, "sizeof(off_t) = %zu bytes (%zu bits)\n",
+               sizeof(off_t), sizeof(off_t) * 8);
+        wifi_util_error_print(WIFI_MGR, "OFF_T_MAX_ULL = %lld  (1ULL shift - no UB)\n",
+               (long long)OFF_T_MAX_ULL);
+#undef OFF_T_MAX_ULL
+    }
+    /* --- end test --- */
 #if defined(FEATURE_SUPPORT_RDKLOG)
         RDK_LOGGER_INIT();
 wifi_util_dbg_print(WIFI_MGR,"%s:%d: RDK_LOGGER_INIT done!\n", __func__, __LINE__);
