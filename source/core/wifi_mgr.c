@@ -398,20 +398,14 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-        /* --- OFF_T_MAX comparison test (remove after verification) --- */
+    /* --- OFF_T_MAX test (ULL version only - remove after verification) --- */
     {
 #define OFF_T_MAX_ULL  ((off_t)(((1ULL << (sizeof(off_t) * 8 - 1)) - 1)))
-#define OFF_T_MAX_SIGNED ((off_t)((((off_t)1 << (sizeof(off_t)*8 - 1)) - 1)))
-        wifi_util_error_print(WIFI_MGR,"sizeof(off_t) = %zu bytes (%zu bits)\n",
+        wifi_util_error_print(WIFI_MGR, "sizeof(off_t) = %zu bytes (%zu bits)\n",
                sizeof(off_t), sizeof(off_t) * 8);
-        wifi_util_error_print(WIFI_MGR,"OFF_T_MAX_ULL = %lld  (1ULL shift  - no UB)\n",
+        wifi_util_error_print(WIFI_MGR, "OFF_T_MAX_ULL = %lld  (1ULL shift - no UB)\n",
                (long long)OFF_T_MAX_ULL);
-        wifi_util_error_print(WIFI_MGR, "OFF_T_MAX_SIGNED = %lld  ((off_t)1 shift - UB)\n",
-               (long long)OFF_T_MAX_SIGNED);
-        wifi_util_error_print(WIFI_MGR, "Values match = %s\n",
-               (OFF_T_MAX_ULL == OFF_T_MAX_SIGNED) ? "YES" : "NO");
 #undef OFF_T_MAX_ULL
-#undef OFF_T_MAX_SIGNED
     }
     /* --- end test --- */
 
