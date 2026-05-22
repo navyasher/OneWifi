@@ -85,7 +85,7 @@
 #define ONEWIFI_DB_VERSION_STATS_FLAG 100037
 #define ONEWIFI_DB_VERSION_MEMWRAPTOOL_FLAG 100040
 #define DEFAULT_WHIX_CHUTILITY_LOGINTERVAL 900
-#define DEFAULT_WHIX_LOGINTERVAL 3600
+#define DEFAULT_WHIX_LOGINTERVAL 900
 #define ONEWIFI_DB_VERSION_UPDATE_MLD_FLAG 100042
 #define ONEWIFI_DB_VERSION_WPA3_T_DISABLE_FLAG 100043
 #define ONEWIFI_DB_VERSION_UPDATE_MULTI_MLD_UNIT_FLAG 100044
@@ -93,6 +93,9 @@
 #define ONEWIFI_DB_VERSION_ENCR_GCMP_FLAG 100048
 #define ONEWIFI_DB_VERSION_ENCR_NEW_FLAG 100049
 #define ONEWIFI_DB_VERSION_TCM_PER_VAP_FLAG 100050
+#define ONEWIFI_DB_VERSION_2G80211AX_FLAG 100052
+#define ONEWIFI_DB_VERSION_WHIX_LOGINTERVAL_DEFAULT_FLAG 100053
+#define ONEWIFI_DB_VERSION_ACTIVE_MSMT_ENABLE_FLAG 100054
 
 #define IGNITE_MIN_CHUTIL_THRESHOLD  50
 #define IGNITE_MAX_CHUTIL_THRESHOLD 100
@@ -4812,11 +4815,8 @@ void wifidb_init_rfc_config_default(wifi_rfc_dml_parameters_t *config)
 #else
     rfc_config.wpa3_rfc = false;
 #endif
-#if defined(ALWAYS_ENABLE_AX_2G) || defined(NEWPLATFORM_PORT)
+
     rfc_config.twoG80211axEnable_rfc = true;
-#else
-    rfc_config.twoG80211axEnable_rfc = false;
-#endif
     rfc_config.hotspot_open_2g_last_enabled = false;
     rfc_config.hotspot_open_5g_last_enabled = false;
     rfc_config.hotspot_open_6g_last_enabled = false;
@@ -4957,6 +4957,20 @@ static void wifidb_global_config_upgrade()
             DEFAULT_HEAPWALK_INTERVAL;
         g_wifidb->global_config.global_parameters.memwraptool.enable = true;
     }
+
+    if (g_wifidb->db_version < ONEWIFI_DB_VERSION_WHIX_LOGINTERVAL_DEFAULT_FLAG) {
+            wifi_util_info_print(WIFI_DB, "%s:%d Overriding whix_log_interval to 900 seconds\n",
+                    __func__, __LINE__);
+            g_wifidb->global_config.global_parameters.whix_log_interval = 900;
+            p_ccsp_desc->psm_set_value_fn(WhixLoginterval, "900");
+        }
+
+    if (g_wifidb->db_version < ONEWIFI_DB_VERSION_ACTIVE_MSMT_ENABLE_FLAG) {
+            wifi_util_info_print(WIFI_DB, "%s:%d Overriding wifi_active_msmt_enabled to true\n",
+                __func__, __LINE__);
+            g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled = true;
+            p_ccsp_desc->psm_set_value_fn(WiFiActiveMsmtEnabled, "true");
+        }
 }
 
 /************************************************************************************
@@ -6330,6 +6344,16 @@ int wifidb_update_rfc_config(UINT rfc_id, wifi_rfc_dml_parameters_t *rfc_param)
         }
     }
     return 0;
+}
+
+bool wifidb_overide_rfc_config(wifi_rfc_dml_parameters_t *rfc_param)
+{
+    if (g_wifidb->db_version < ONEWIFI_DB_VERSION_2G80211AX_FLAG) {
+        wifi_util_info_print(WIFI_DB, "%s:%d Overriding twoG80211axEnable_rfc=true\n", __func__, __LINE__);
+        rfc_param->twoG80211axEnable_rfc = true;
+        return true;
+    }
+    return false;
 }
 
 /************************************************************************************
@@ -7963,7 +7987,7 @@ int wifidb_init_global_config_default(wifi_global_param_t *config)
     cfg.inst_wifi_client_enabled = false;
     cfg.inst_wifi_client_reporting_period = 0;
     cfg.inst_wifi_client_def_reporting_period = 0;
-    cfg.wifi_active_msmt_enabled = false;
+    cfg.wifi_active_msmt_enabled = true;
     cfg.wifi_active_msmt_pktsize = 1470;
     cfg.wifi_active_msmt_num_samples = 5;
     cfg.wifi_active_msmt_sample_duration = 400;
@@ -8377,13 +8401,13 @@ void init_wifidb_data()
                 rfc_param->tcm_secure_6g_rfc = true;
                 update_rfc_config = true;
             }
+            if(wifidb_overide_rfc_config(rfc_param)) {
+                update_rfc_config = true;
+            }
         }
         if (update_rfc_config == true) {
             wifidb_update_rfc_config(0, rfc_param);
         }
-#ifdef ALWAYS_ENABLE_AX_2G
-        wifidb_update_rfc_config(0, rfc_param);
-#endif
         get_wifi_country_code_from_bootstrap_json(country_code, COUNTRY_CODE_LEN);
         pthread_mutex_lock(&g_wifidb->data_cache_lock);
         for (r_index = 0; r_index < num_radio; r_index++) {
