@@ -95,7 +95,7 @@
 #define ONEWIFI_DB_VERSION_TCM_PER_VAP_FLAG 100050
 #define ONEWIFI_DB_VERSION_HOSTAP_MGMT_FRAME_CTRL_NEW_FLAG 100051
 #define ONEWIFI_DB_VERSION_2G80211AX_FLAG 100052
-// #define ONEWIFI_DB_VERSION_WHIX_LOGINTERVAL_DEFAULT_FLAG 100053
+#define ONEWIFI_DB_VERSION_WHIX_LOGINTERVAL_DEFAULT_FLAG 100053
 // #define ONEWIFI_DB_VERSION_ACTIVE_MSMT_ENABLE_FLAG 100054
 
 #define IGNITE_MIN_CHUTIL_THRESHOLD  50
@@ -4973,12 +4973,27 @@ static void wifidb_global_config_upgrade()
         rfc_param->tcm_secure_6g_rfc = true;
     }
 
-    // if (g_wifidb->db_version < ONEWIFI_DB_VERSION_WHIX_LOGINTERVAL_DEFAULT_FLAG) {
-    //         wifi_util_info_print(WIFI_DB, "%s:%d Overriding whix_log_interval to 900 seconds\n",
-    //                 __func__, __LINE__);
-    //         g_wifidb->global_config.global_parameters.whix_log_interval = 900;
-    //         p_ccsp_desc->psm_set_value_fn(WhixLoginterval, "900");
-    //     }
+    if (g_wifidb->db_version < ONEWIFI_DB_VERSION_WHIX_LOGINTERVAL_DEFAULT_FLAG) {
+        wifi_ctrl_t *ctrl = get_wifictrl_obj();
+        raw_data_t   data;
+        bus_error_t  rc;
+
+        wifi_util_info_print(WIFI_DB, "%s:%d Overriding whix_log_interval to 900 seconds\n",
+                __func__, __LINE__);
+        g_wifidb->global_config.global_parameters.whix_log_interval = 900;
+
+        memset(&data, 0, sizeof(raw_data_t));
+        data.data_type    = bus_data_type_int32;
+        data.raw_data.i32 = 900;
+
+        rc = get_bus_descriptor()->bus_set_fn(&ctrl->handle,
+                 "Device.DeviceInfo.X_RDKCENTRAL-COM_WIFI_TELEMETRY.LogInterval", &data);
+        if (rc != bus_error_success) {
+            wifi_util_error_print(WIFI_DB,
+                "%s:%d Failed to update LogInterval in P&M, rc=%d\n",
+                __func__, __LINE__, rc);
+        }
+    }
 
     // if (g_wifidb->db_version < ONEWIFI_DB_VERSION_ACTIVE_MSMT_ENABLE_FLAG) {
     //         wifi_util_info_print(WIFI_DB, "%s:%d Overriding wifi_active_msmt_enabled to true\n",
