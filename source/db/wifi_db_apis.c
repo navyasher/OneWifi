@@ -96,7 +96,8 @@
 #define ONEWIFI_DB_VERSION_HOSTAP_MGMT_FRAME_CTRL_NEW_FLAG 100051
 #define ONEWIFI_DB_VERSION_2G80211AX_FLAG 100052
 #define ONEWIFI_DB_VERSION_WHIX_LOGINTERVAL_DEFAULT_FLAG 100053
-// #define ONEWIFI_DB_VERSION_ACTIVE_MSMT_ENABLE_FLAG 100054
+#define ONEWIFI_DB_VERSION_ACTIVE_MSMT_ENABLE_FLAG 100054
+#define ONEWIFI_DB_VERSION_WIFI_INTERWORKING_PASSPOINT_RFC_FLAG 100055
 
 #define IGNITE_MIN_CHUTIL_THRESHOLD  50
 #define IGNITE_MAX_CHUTIL_THRESHOLD 100
@@ -4805,8 +4806,8 @@ void wifidb_init_rfc_config_default(wifi_rfc_dml_parameters_t *config)
     wifi_mgr_t *g_wifidb;
     g_wifidb = get_wifimgr_obj();
 
-    rfc_config.wifipasspoint_rfc = false;
-    rfc_config.wifiinterworking_rfc = false;
+    rfc_config.wifipasspoint_rfc = true;
+    rfc_config.wifiinterworking_rfc = true;
     rfc_config.radiusgreylist_rfc = false;
     rfc_config.dfsatbootup_rfc = false;
     rfc_config.dfs_rfc = false;
@@ -4881,6 +4882,9 @@ static void wifidb_global_config_upgrade()
     wifi_mgr_t *g_wifidb = get_wifimgr_obj();
     wifi_ccsp_desc_t *p_ccsp_desc = &get_wificcsp_obj()->desc;
     wifi_rfc_dml_parameters_t *rfc_param = get_wifi_db_rfc_parameters();
+    wifi_ctrl_t *ctrl = get_wifictrl_obj();
+    raw_data_t   data = {0};
+    bus_error_t  rc;
 
     if (g_wifidb->db_version == 0) {
         return;
@@ -4974,10 +4978,6 @@ static void wifidb_global_config_upgrade()
     }
 
     if (g_wifidb->db_version < ONEWIFI_DB_VERSION_WHIX_LOGINTERVAL_DEFAULT_FLAG) {
-        wifi_ctrl_t *ctrl = get_wifictrl_obj();
-        raw_data_t   data;
-        bus_error_t  rc;
-
         wifi_util_info_print(WIFI_DB, "%s:%d Overriding whix_log_interval to 900 seconds\n",
                 __func__, __LINE__);
         g_wifidb->global_config.global_parameters.whix_log_interval = 900;
@@ -4995,12 +4995,47 @@ static void wifidb_global_config_upgrade()
         }
     }
 
-    // if (g_wifidb->db_version < ONEWIFI_DB_VERSION_ACTIVE_MSMT_ENABLE_FLAG) {
-    //         wifi_util_info_print(WIFI_DB, "%s:%d Overriding wifi_active_msmt_enabled to true\n",
-    //             __func__, __LINE__);
-    //         g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled = true;
-    //         p_ccsp_desc->psm_set_value_fn(WiFiActiveMsmtEnabled, "true");
-    //     }
+    if (g_wifidb->db_version < ONEWIFI_DB_VERSION_ACTIVE_MSMT_ENABLE_FLAG) {
+        wifi_util_info_print(WIFI_DB, "%s:%d Overriding wifi_active_msmt_enabled to true\n",
+            __func__, __LINE__);
+        g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled = true;
+
+        memset(&data, 0, sizeof(raw_data_t));
+        data.data_type  = bus_data_type_boolean;
+        data.raw_data.b = true;
+
+        rc = get_bus_descriptor()->bus_set_fn(&ctrl->handle,
+                 "Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.WifiClient.ActiveMeasurements.Enable", &data);
+        if (rc != bus_error_success) {
+            wifi_util_error_print(WIFI_DB, "%s:%d Failed to update ActiveMeasurements Enable in P&M, rc=%d\n",
+                __func__, __LINE__, rc);
+        }
+    }
+
+    if (g_wifidb->db_version < ONEWIFI_DB_VERSION_WIFI_INTERWORKING_PASSPOINT_RFC_FLAG) {
+        wifi_util_info_print(WIFI_DB, "%s:%d Overriding wifiinterworking_rfc and wifipasspoint_rfc to true\n",
+            __func__, __LINE__);
+        rfc_param->wifiinterworking_rfc = true;
+        rfc_param->wifipasspoint_rfc    = true;
+
+        memset(&data, 0, sizeof(raw_data_t));
+        data.data_type  = bus_data_type_boolean;
+        data.raw_data.b = true;
+
+        rc = get_bus_descriptor()->bus_set_fn(&ctrl->handle,
+                 "Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.WiFi-Interworking.Enable", &data);
+        if (rc != bus_error_success) {
+            wifi_util_error_print(WIFI_DB, "%s:%d Failed to update WiFi-Interworking RFC.Enable, rc=%d\n",
+                __func__, __LINE__, rc);
+        }
+
+        rc = get_bus_descriptor()->bus_set_fn(&ctrl->handle,
+                 "Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.WiFi-Passpoint.Enable", &data);
+        if (rc != bus_error_success) {
+            wifi_util_error_print(WIFI_DB, "%s:%d Failed to update WiFi-Passpoint RFC.Enable, rc=%d\n",
+                __func__, __LINE__, rc);
+        }
+    }
 }
 
 /************************************************************************************
