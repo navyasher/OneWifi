@@ -6392,12 +6392,15 @@ int wifidb_update_rfc_config(UINT rfc_id, wifi_rfc_dml_parameters_t *rfc_param)
 bool wifidb_overide_rfc_config(wifi_rfc_dml_parameters_t *rfc_param)
 {
     wifi_mgr_t *g_wifidb = get_wifimgr_obj();
+    bool modified = false;
+ 
     if (g_wifidb->db_version < ONEWIFI_DB_VERSION_2G80211AX_FLAG) {
         wifi_util_info_print(WIFI_DB, "%s:%d Overriding twoG80211axEnable_rfc=true\n", __func__, __LINE__);
         rfc_param->twoG80211axEnable_rfc = true;
-        return true;
+        modified = true;
     }
-    return false;
+ 
+    return modified;
 }
 
 /************************************************************************************
@@ -8435,7 +8438,7 @@ void init_wifidb_data()
         if (wifidb_get_rfc_config(0,rfc_param) != 0) {
             wifi_util_error_print(WIFI_DB,"%s:%d: Error getting RFC config\n",__func__, __LINE__);
         } else {
-                if(wifidb_overide_rfc_config(rfc_param)) {
+                if(wifidb_overide_rfc_config(rfc_param) == true) {
                     wifidb_update_rfc_config(0, rfc_param);
             }
         }
