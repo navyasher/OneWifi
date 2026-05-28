@@ -95,9 +95,9 @@
 #define ONEWIFI_DB_VERSION_TCM_PER_VAP_FLAG 100050
 #define ONEWIFI_DB_VERSION_HOSTAP_MGMT_FRAME_CTRL_NEW_FLAG 100051
 #define ONEWIFI_DB_VERSION_2G80211AX_FLAG 100052
-#define ONEWIFI_DB_VERSION_WHIX_LOGINTERVAL_DEFAULT_FLAG 100053
-#define ONEWIFI_DB_VERSION_ACTIVE_MSMT_ENABLE_FLAG 100054
-#define ONEWIFI_DB_VERSION_WIFI_INTERWORKING_PASSPOINT_RFC_FLAG 100055
+// #define ONEWIFI_DB_VERSION_WHIX_LOGINTERVAL_DEFAULT_FLAG 100053
+// #define ONEWIFI_DB_VERSION_ACTIVE_MSMT_ENABLE_FLAG 100054
+// #define ONEWIFI_DB_VERSION_WIFI_INTERWORKING_PASSPOINT_RFC_FLAG 100055
 
 #define IGNITE_MIN_CHUTIL_THRESHOLD  50
 #define IGNITE_MAX_CHUTIL_THRESHOLD 100
@@ -4977,65 +4977,65 @@ static void wifidb_global_config_upgrade()
         rfc_param->tcm_secure_6g_rfc = true;
     }
 
-    if (g_wifidb->db_version < ONEWIFI_DB_VERSION_WHIX_LOGINTERVAL_DEFAULT_FLAG) {
-        wifi_util_info_print(WIFI_DB, "%s:%d Overriding whix_log_interval to 900 seconds\n",
-                __func__, __LINE__);
-        g_wifidb->global_config.global_parameters.whix_log_interval = 900;
+    // if (g_wifidb->db_version < ONEWIFI_DB_VERSION_WHIX_LOGINTERVAL_DEFAULT_FLAG) {
+    //     wifi_util_info_print(WIFI_DB, "%s:%d Overriding whix_log_interval to 900 seconds\n",
+    //             __func__, __LINE__);
+    //     g_wifidb->global_config.global_parameters.whix_log_interval = 900;
 
-        memset(&data, 0, sizeof(raw_data_t));
-        data.data_type    = bus_data_type_int32;
-        data.raw_data.i32 = 900;
+    //     memset(&data, 0, sizeof(raw_data_t));
+    //     data.data_type    = bus_data_type_int32;
+    //     data.raw_data.i32 = 900;
 
-        rc = get_bus_descriptor()->bus_set_fn(&ctrl->handle,
-                 "Device.DeviceInfo.X_RDKCENTRAL-COM_WIFI_TELEMETRY.LogInterval", &data);
-        if (rc != bus_error_success) {
-            wifi_util_error_print(WIFI_DB,
-                "%s:%d Failed to update LogInterval in P&M, rc=%d\n",
-                __func__, __LINE__, rc);
-        }
-    }
+    //     rc = get_bus_descriptor()->bus_set_fn(&ctrl->handle,
+    //              "Device.DeviceInfo.X_RDKCENTRAL-COM_WIFI_TELEMETRY.LogInterval", &data);
+    //     if (rc != bus_error_success) {
+    //         wifi_util_error_print(WIFI_DB,
+    //             "%s:%d Failed to update LogInterval in P&M, rc=%d\n",
+    //             __func__, __LINE__, rc);
+    //     }
+    // }
 
-    if (g_wifidb->db_version < ONEWIFI_DB_VERSION_ACTIVE_MSMT_ENABLE_FLAG) {
-        wifi_util_info_print(WIFI_DB, "%s:%d Overriding wifi_active_msmt_enabled to true\n",
-            __func__, __LINE__);
-        g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled = true;
+    // if (g_wifidb->db_version < ONEWIFI_DB_VERSION_ACTIVE_MSMT_ENABLE_FLAG) {
+    //     wifi_util_info_print(WIFI_DB, "%s:%d Overriding wifi_active_msmt_enabled to true\n",
+    //         __func__, __LINE__);
+    //     g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled = true;
 
-        memset(&data, 0, sizeof(raw_data_t));
-        data.data_type  = bus_data_type_boolean;
-        data.raw_data.b = true;
+    //     memset(&data, 0, sizeof(raw_data_t));
+    //     data.data_type  = bus_data_type_boolean;
+    //     data.raw_data.b = true;
 
-        rc = get_bus_descriptor()->bus_set_fn(&ctrl->handle,
-                 "Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.WifiClient.ActiveMeasurements.Enable", &data);
-        if (rc != bus_error_success) {
-            wifi_util_error_print(WIFI_DB, "%s:%d Failed to update ActiveMeasurements Enable in P&M, rc=%d\n",
-                __func__, __LINE__, rc);
-        }
-    }
+    //     rc = get_bus_descriptor()->bus_set_fn(&ctrl->handle,
+    //              "Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.WifiClient.ActiveMeasurements.Enable", &data);
+    //     if (rc != bus_error_success) {
+    //         wifi_util_error_print(WIFI_DB, "%s:%d Failed to update ActiveMeasurements Enable in P&M, rc=%d\n",
+    //             __func__, __LINE__, rc);
+    //     }
+    // }
 
-    if (g_wifidb->db_version < ONEWIFI_DB_VERSION_WIFI_INTERWORKING_PASSPOINT_RFC_FLAG) {
-        wifi_util_info_print(WIFI_DB, "%s:%d Overriding wifiinterworking_rfc and wifipasspoint_rfc to true\n",
-            __func__, __LINE__);
-        rfc_param->wifiinterworking_rfc = true;
-        rfc_param->wifipasspoint_rfc    = true;
+    // if (g_wifidb->db_version < ONEWIFI_DB_VERSION_WIFI_INTERWORKING_PASSPOINT_RFC_FLAG) {
+    //     wifi_util_info_print(WIFI_DB, "%s:%d Overriding wifiinterworking_rfc and wifipasspoint_rfc to true\n",
+    //         __func__, __LINE__);
+    //     rfc_param->wifiinterworking_rfc = true;
+    //     rfc_param->wifipasspoint_rfc    = true;
 
-        memset(&data, 0, sizeof(raw_data_t));
-        data.data_type  = bus_data_type_boolean;
-        data.raw_data.b = true;
+    //     memset(&data, 0, sizeof(raw_data_t));
+    //     data.data_type  = bus_data_type_boolean;
+    //     data.raw_data.b = true;
 
-        rc = get_bus_descriptor()->bus_set_fn(&ctrl->handle,
-                 "Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.WiFi-Interworking.Enable", &data);
-        if (rc != bus_error_success) {
-            wifi_util_error_print(WIFI_DB, "%s:%d Failed to update WiFi-Interworking RFC.Enable, rc=%d\n",
-                __func__, __LINE__, rc);
-        }
+    //     rc = get_bus_descriptor()->bus_set_fn(&ctrl->handle,
+    //              "Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.WiFi-Interworking.Enable", &data);
+    //     if (rc != bus_error_success) {
+    //         wifi_util_error_print(WIFI_DB, "%s:%d Failed to update WiFi-Interworking RFC.Enable, rc=%d\n",
+    //             __func__, __LINE__, rc);
+    //     }
 
-        rc = get_bus_descriptor()->bus_set_fn(&ctrl->handle,
-                 "Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.WiFi-Passpoint.Enable", &data);
-        if (rc != bus_error_success) {
-            wifi_util_error_print(WIFI_DB, "%s:%d Failed to update WiFi-Passpoint RFC.Enable, rc=%d\n",
-                __func__, __LINE__, rc);
-        }
-    }
+    //     rc = get_bus_descriptor()->bus_set_fn(&ctrl->handle,
+    //              "Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.WiFi-Passpoint.Enable", &data);
+    //     if (rc != bus_error_success) {
+    //         wifi_util_error_print(WIFI_DB, "%s:%d Failed to update WiFi-Passpoint RFC.Enable, rc=%d\n",
+    //             __func__, __LINE__, rc);
+    //     }
+    // }
 }
 
 /************************************************************************************
