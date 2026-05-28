@@ -4882,9 +4882,9 @@ static void wifidb_global_config_upgrade()
     wifi_mgr_t *g_wifidb = get_wifimgr_obj();
     wifi_ccsp_desc_t *p_ccsp_desc = &get_wificcsp_obj()->desc;
     wifi_rfc_dml_parameters_t *rfc_param = get_wifi_db_rfc_parameters();
-    wifi_ctrl_t *ctrl = get_wifictrl_obj();
-    raw_data_t   data = {0};
-    bus_error_t  rc;
+    // wifi_ctrl_t *ctrl = get_wifictrl_obj();
+    // raw_data_t   data = {0};
+    // bus_error_t  rc;
 
     if (g_wifidb->db_version == 0) {
         return;
