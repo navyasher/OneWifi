@@ -94,7 +94,7 @@
 #define ONEWIFI_DB_VERSION_ENCR_NEW_FLAG 100049
 #define ONEWIFI_DB_VERSION_TCM_PER_VAP_FLAG 100050
 #define ONEWIFI_DB_VERSION_HOSTAP_MGMT_FRAME_CTRL_NEW_FLAG 100051
-#define ONEWIFI_DB_VERSION_RFC_FLAG 100052
+#define ONEWIFI_DB_VERSION_2G11AXENABLE_RFC_FLAG 100052
 
 #define IGNITE_MIN_CHUTIL_THRESHOLD  50
 #define IGNITE_MAX_CHUTIL_THRESHOLD 100
@@ -6361,7 +6361,7 @@ bool wifidb_overide_rfc_config(wifi_rfc_dml_parameters_t *rfc_param)
     wifi_mgr_t *g_wifidb = get_wifimgr_obj();
     bool modified = false;
  
-    if (g_wifidb->db_version < ONEWIFI_DB_VERSION_RFC_FLAG) {
+    if (g_wifidb->db_version < ONEWIFI_DB_VERSION_2G11AXENABLE_RFC_FLAG) {
         wifi_util_info_print(WIFI_DB, "%s:%d Overriding twoG80211axEnable_rfc=true\n", __func__, __LINE__);
         rfc_param->twoG80211axEnable_rfc = true;
         modified = true;
