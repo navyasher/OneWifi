@@ -4883,9 +4883,6 @@ static void wifidb_global_config_upgrade()
     if (g_wifidb->db_version == 0) {
         return;
     }
-    // if (g_wifidb->db_version < ONEWIFI_DB_VERSION_LOGINTERVAL_FLAG) {
-    //     wifi_util_dbg_print(WIFI_DB, "%s:%d upgrade global config, old db version %d \n", __func__,
-    //         __LINE__, g_wifidb->db_version);
 
         memset(strValue, 0, sizeof(strValue));
         str = (char *)p_ccsp_desc->psm_get_value_fn(WhixLoginterval, strValue, sizeof(strValue));
@@ -4898,7 +4895,7 @@ static void wifidb_global_config_upgrade()
             wifi_util_error_print(WIFI_DB, ":%s:%d str value for whix_log_interval is null \r\n",
                 __func__, __LINE__);
         }
-    // }
+
 
     if (g_wifidb->db_version < ONEWIFI_DB_VERSION_CHUTILITY_LOGINTERVAL_FLAG) {
         wifi_util_dbg_print(WIFI_DB, "%s:%d upgrade global config, old db version %d \n", __func__,
@@ -4971,11 +4968,6 @@ static void wifidb_global_config_upgrade()
         rfc_param->tcm_secure_6g_rfc = true;
     }
 
-    if (g_wifidb->db_version < ONEWIFI_DB_VERSION_RFC_FLAG) {
-            wifi_util_info_print(WIFI_DB, "%s:%d Overriding whix_log_interval to 900 seconds\n",
-                    __func__, __LINE__);
-            g_wifidb->global_config.global_parameters.whix_log_interval = 900;
-        }
 }
 
 /************************************************************************************
@@ -8710,6 +8702,7 @@ int wifi_db_update_global_config(wifi_global_param_t *global_cfg)
 wifi_util_dbg_print(WIFI_MGR,"NTesting wifi_db_update_global_config function\n");
 
 #ifndef NEWPLATFORM_PORT
+    wifi_util_dbg_print(WIFI_MGR,"NTesting wifi_db_update_global_config function 2\n");
     str = p_ccsp_desc->psm_get_value_fn(WiFivAPStatsFeatureEnable, strValue, sizeof(strValue));
     if (str != NULL) {
         convert_ascii_string_to_bool(str, &global_cfg->vap_stats_feature);
