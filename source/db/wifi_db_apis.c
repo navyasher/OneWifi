@@ -4975,7 +4975,6 @@ static void wifidb_global_config_upgrade()
             wifi_util_info_print(WIFI_DB, "%s:%d Overriding whix_log_interval to 900 seconds\n",
                     __func__, __LINE__);
             g_wifidb->global_config.global_parameters.whix_log_interval = 900;
-            p_ccsp_desc->psm_set_value_fn(WhixLoginterval, "900");
         }
 }
 
