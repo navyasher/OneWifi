@@ -58,7 +58,7 @@
 #define ONEWIFI_DB_VERSION_EXISTS_FLAG 100017
 #define ONEWIFI_DB_OLD_VERSION_FILE "/tmp/wifi_db_old_version"
 #define ONEWIFI_DB_VERSION_OFFCHANNELSCAN_FLAG 100018
-#define ONEWIFI_DB_VERSION_LOGINTERVAL_FLAG 100022
+// #define ONEWIFI_DB_VERSION_LOGINTERVAL_FLAG 100022
 #define ONEWIFI_DB_VERSION_CHUTILITY_LOGINTERVAL_FLAG 100023
 #define ONEWIFI_DB_VERSION_IEEE80211BE_FLAG 100025
 #define ONEWIFI_DB_VERSION_MBO_FLAG 100029
@@ -4896,6 +4896,15 @@ static void wifidb_global_config_upgrade()
                 __func__, __LINE__);
         }
 
+        memset(strValue, 0, sizeof(strValue));
+        str = p_ccsp_desc->psm_get_value_fn(WiFiActiveMsmtEnabled, strValue, sizeof(strValue));
+        if (str != NULL) {
+            convert_ascii_string_to_bool(str, &global_cfg->wifi_active_msmt_enabled);
+            wifi_util_dbg_print(WIFI_MGR,"global_cfg->wifi_active_msmt_enabled is %d and str is %s\r\n", global_cfg->wifi_active_msmt_enabled, str);
+        } else {
+                global_cfg->wifi_active_msmt_enabled = true;
+                wifi_util_dbg_print(WIFI_MGR,":%s:%d str value for wifi_active_msmt_enabled:%s \r\n", __func__, __LINE__, str);
+        }
 
     if (g_wifidb->db_version < ONEWIFI_DB_VERSION_CHUTILITY_LOGINTERVAL_FLAG) {
         wifi_util_dbg_print(WIFI_DB, "%s:%d upgrade global config, old db version %d \n", __func__,
