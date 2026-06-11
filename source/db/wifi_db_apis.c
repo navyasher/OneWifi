@@ -4899,10 +4899,10 @@ static void wifidb_global_config_upgrade()
         memset(strValue, 0, sizeof(strValue));
         str = p_ccsp_desc->psm_get_value_fn(WiFiActiveMsmtEnabled, strValue, sizeof(strValue));
         if (str != NULL) {
-            convert_ascii_string_to_bool(str, &global_cfg->wifi_active_msmt_enabled);
-            wifi_util_dbg_print(WIFI_MGR,"global_cfg->wifi_active_msmt_enabled is %d and str is %s\r\n", global_cfg->wifi_active_msmt_enabled, str);
+            convert_ascii_string_to_bool(str, &g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled);
+            wifi_util_dbg_print(WIFI_MGR,"global_config.wifi_active_msmt_enabled is %d and str is %s\r\n", g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled, str);
         } else {
-                global_cfg->wifi_active_msmt_enabled = true;
+                g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled = true;
                 wifi_util_dbg_print(WIFI_MGR,":%s:%d str value for wifi_active_msmt_enabled:%s \r\n", __func__, __LINE__, str);
         }
 
