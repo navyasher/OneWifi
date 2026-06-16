@@ -177,6 +177,7 @@ static char *InstWifiClientReportingPeriod = "eRT.com.cisco.spvtg.ccsp.Device.Wi
 static char *InstWifiClientMacAddress = "eRT.com.cisco.spvtg.ccsp.Device.WiFi.InstWifiClientMacAddress";
 static char *InstWifiClientDefReportingPeriod = "eRT.com.cisco.spvtg.ccsp.Device.WiFi.InstWifiClientDefReportingPeriod";
 static char *WiFiActiveMsmtEnabled = "eRT.com.cisco.spvtg.ccsp.Device.WiFi.WiFiActiveMsmtEnabled";
+static char *WiFiActiveMsmtRfcEnabled = "Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.WifiClient.ActiveMeasurements.Enable";
 static char *WiFiActiveMsmtPktSize = "eRT.com.cisco.spvtg.ccsp.Device.WiFi.WiFiActiveMsmtPktSize";
 static char *WiFiActiveMsmtNumberOfSample = "eRT.com.cisco.spvtg.ccsp.Device.WiFi.WiFiActiveMsmtNumberOfSample";
 static char *WiFiActiveMsmtSampleDuration = "eRT.com.cisco.spvtg.ccsp.Device.WiFi.WiFiActiveMsmtSampleDuration";
@@ -4897,11 +4898,18 @@ static void wifidb_global_config_upgrade()
         }
 
         memset(strValue, 0, sizeof(strValue));
-        str = p_ccsp_desc->psm_get_value_fn(WiFiActiveMsmtEnabled, strValue, sizeof(strValue));
+        str = p_ccsp_desc->psm_get_value_fn(WiFiActiveMsmtRfcEnabled, strValue, sizeof(strValue));
         if (str != NULL) {
-            convert_ascii_string_to_bool(str, &g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled);
-            wifi_util_dbg_print(WIFI_MGR,"global_config.wifi_active_msmt_enabled is %d and str is %s\r\n", g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled, str);
+            g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled = (atoi(str) != 0) ? true : false;
+            p_ccsp_desc->psm_set_value_fn(WiFiActiveMsmtEnabled, str, strlen(str));
+            wifi_util_dbg_print(WIFI_MGR,"global_config.wifi_active_msmt_enabled is %d (from RFC key, str=%s)\r\n", g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled, str);
         } else {
+            memset(strValue, 0, sizeof(strValue));
+            str = p_ccsp_desc->psm_get_value_fn(WiFiActiveMsmtEnabled, strValue, sizeof(strValue));
+            if (str != NULL) {
+                convert_ascii_string_to_bool(str, &g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled);
+                wifi_util_dbg_print(WIFI_MGR,"global_config.wifi_active_msmt_enabled is %d (from legacy key, str=%s)\r\n", g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled, str);
+            } else {
                 g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled = true;
                 wifi_util_dbg_print(WIFI_MGR,":%s:%d str value for wifi_active_msmt_enabled:%s \r\n", __func__, __LINE__, str);
         }
