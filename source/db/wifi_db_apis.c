@@ -4901,7 +4901,7 @@ static void wifidb_global_config_upgrade()
         str = p_ccsp_desc->psm_get_value_fn(WiFiActiveMsmtRfcEnabled, strValue, sizeof(strValue));
         if (str != NULL) {
             g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled = (atoi(str) != 0) ? true : false;
-            p_ccsp_desc->psm_set_value_fn(WiFiActiveMsmtEnabled, str, strlen(str));
+            p_ccsp_desc->psm_set_value_fn(WiFiActiveMsmtEnabled, str);
             wifi_util_dbg_print(WIFI_MGR,"global_config.wifi_active_msmt_enabled is %d (from RFC key, str=%s)\r\n", g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled, str);
         } else {
             memset(strValue, 0, sizeof(strValue));
