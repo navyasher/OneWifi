@@ -4912,6 +4912,7 @@ static void wifidb_global_config_upgrade()
             } else {
                 g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled = true;
                 wifi_util_dbg_print(WIFI_MGR,":%s:%d str value for wifi_active_msmt_enabled:%s \r\n", __func__, __LINE__, str);
+            }
         }
 
     if (g_wifidb->db_version < ONEWIFI_DB_VERSION_CHUTILITY_LOGINTERVAL_FLAG) {
