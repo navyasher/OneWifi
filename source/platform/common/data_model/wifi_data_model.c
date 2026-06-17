@@ -840,6 +840,7 @@ bus_error_t macfilter_table_add_row_handler(char const *tableName, char const *a
 {
     (void)aliasName;
     wifi_vap_info_t *vap_param;
+    acl_entry_t *acl_entry;
     int vap_index = 0;
     wifi_dml_data_model_t *p_dml_param = get_dml_data_model_param();
 
@@ -848,6 +849,17 @@ bus_error_t macfilter_table_add_row_handler(char const *tableName, char const *a
 
     vap_param = (wifi_vap_info_t *)getVapInfo(vap_index - 1);
     DM_CHECK_NULL_WITH_RC(vap_param, bus_error_general);
+
+    /* Ignore row re-registration during index sync if the row already exists. */
+    if ((instNum != NULL) && (*instNum > 0)) {
+        acl_entry = get_macfilter_entry(vap_param, *instNum - 1);
+        if (acl_entry != NULL) {
+            wifi_util_dbg_print(WIFI_DMCLI,
+                "%s:%d Skip add for existing row table:%s vap:%d index:%d\r\n", __func__,
+                __LINE__, tableName, vap_index, *instNum);
+            return bus_error_success;
+        }
+    }
 
     macfilter_tab_add_entry(vap_param, instNum);
     p_dml_param->table_macfilter_index[vap_param->vap_index]++;
