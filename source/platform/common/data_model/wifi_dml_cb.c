@@ -4349,6 +4349,8 @@ bool interworking_set_param_string_value(void *obj_ins_context, char *param_name
     return true;
 }
 
+static bool g_macfilter_reindex_in_progress_cb[MAX_VAP] = {0};
+
 void *macfilter_tab_add_entry(void *obj_ins_context, uint32_t *p_ins_number)
 {
     wifi_util_dbg_print(WIFI_DMCLI, "%s:%d Inside AddEntry \n", __func__, __LINE__);
@@ -4364,6 +4366,14 @@ void *macfilter_tab_add_entry(void *obj_ins_context, uint32_t *p_ins_number)
 
     hash_map_t **acl_device_map = (hash_map_t **)get_acl_hash_map(vap_info);
     queue_t **acl_new_entry_queue = (queue_t **)get_acl_new_entry_queue(vap_info);
+
+    /* Skip phantom allocation during internal macfilter reindex operations. */
+    if ((vap_info->vap_index < MAX_VAP) && g_macfilter_reindex_in_progress_cb[vap_info->vap_index]) {
+        wifi_util_info_print(WIFI_DMCLI,
+            "%s:%d CALLBACK Skip add during reindex vap:%d\n", __func__, __LINE__,
+            vap_info->vap_index);
+        return NULL;
+    }
 
     acl_entry = (acl_entry_t *)malloc(sizeof(acl_entry_t));
     DM_CHECK_NULL_WITH_RC(acl_entry, NULL);
@@ -4443,11 +4453,25 @@ int macfilter_tab_del_entry(void *obj_ins_context, void *p_instance)
             free(tmp_acl_entry);
         }
 
+        /* Set reindex guard before triggering internal row re-registration via blob push. */
+        if (vap_info->vap_index < MAX_VAP) {
+            g_macfilter_reindex_in_progress_cb[vap_info->vap_index] = true;
+        }
+
         // Send blob
         if (push_acl_list_dml_cache_to_one_wifidb(vap_info) == RETURN_ERR) {
             wifi_util_error_print(WIFI_DMCLI, "%s:%d Mac_Filter falied \n", __func__, __LINE__);
+            if (vap_info->vap_index < MAX_VAP) {
+                g_macfilter_reindex_in_progress_cb[vap_info->vap_index] = false;
+            }
             return RETURN_ERR;
         }
+
+        /* Clear reindex guard after operation completes. */
+        if (vap_info->vap_index < MAX_VAP) {
+            g_macfilter_reindex_in_progress_cb[vap_info->vap_index] = false;
+        }
+
         return RETURN_OK;
     }
 
