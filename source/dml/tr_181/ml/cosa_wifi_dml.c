@@ -18018,6 +18018,8 @@ Authenticator_Commit
     return 0;
 }
 
+static bool g_macfilter_reindex_in_progress[MAX_VAP] = {0};
+
 ULONG
 MacFiltTab_Synchronize
     (
@@ -18147,6 +18149,14 @@ MacFiltTab_AddEntry
     hash_map_t** acl_device_map = (hash_map_t **)get_acl_hash_map(vap_info);
     queue_t** acl_new_entry_queue = (queue_t **)get_acl_new_entry_queue(vap_info);
 
+    /* Skip phantom allocation during internal macfilter reindex operations. */
+    if ((vap_info->vap_index < MAX_VAP) && g_macfilter_reindex_in_progress[vap_info->vap_index]) {
+        wifi_util_info_print(WIFI_DMCLI,
+            "%s:%d LEGACY-DML Skip add during reindex vap:%d\n", __func__, __LINE__,
+            vap_info->vap_index);
+        return (ANSC_HANDLE)NULL;
+    }
+
     acl_entry = (acl_entry_t *)malloc(sizeof(acl_entry_t));
     if (acl_entry == NULL) {
         wifi_util_dbg_print(WIFI_DMCLI,"%s:%d NULL Pointer\n", __func__, __LINE__);
@@ -18233,10 +18243,23 @@ MacFiltTab_DelEntry
             free(tmp_acl_entry);
         }
 
+        /* Set reindex guard before triggering internal row re-registration via blob push. */
+        if (vap_info->vap_index < MAX_VAP) {
+            g_macfilter_reindex_in_progress[vap_info->vap_index] = true;
+        }
+
         // Send blob
         if(push_acl_list_dml_cache_to_one_wifidb(vap_info) == RETURN_ERR) {
             wifi_util_dbg_print(WIFI_DMCLI,"%s:%d Mac_Filter failed \n",__func__, __LINE__);
+            if (vap_info->vap_index < MAX_VAP) {
+                g_macfilter_reindex_in_progress[vap_info->vap_index] = false;
+            }
             return ANSC_STATUS_FAILURE;
+        }
+
+        /* Clear reindex guard after operation completes. */
+        if (vap_info->vap_index < MAX_VAP) {
+            g_macfilter_reindex_in_progress[vap_info->vap_index] = false;
         }
 
         return ANSC_STATUS_SUCCESS;
