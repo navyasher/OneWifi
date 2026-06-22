@@ -58,7 +58,6 @@
 #define ONEWIFI_DB_VERSION_EXISTS_FLAG 100017
 #define ONEWIFI_DB_OLD_VERSION_FILE "/tmp/wifi_db_old_version"
 #define ONEWIFI_DB_VERSION_OFFCHANNELSCAN_FLAG 100018
-// #define ONEWIFI_DB_VERSION_LOGINTERVAL_FLAG 100022
 #define ONEWIFI_DB_VERSION_CHUTILITY_LOGINTERVAL_FLAG 100023
 #define ONEWIFI_DB_VERSION_IEEE80211BE_FLAG 100025
 #define ONEWIFI_DB_VERSION_MBO_FLAG 100029
@@ -177,7 +176,6 @@ static char *InstWifiClientReportingPeriod = "eRT.com.cisco.spvtg.ccsp.Device.Wi
 static char *InstWifiClientMacAddress = "eRT.com.cisco.spvtg.ccsp.Device.WiFi.InstWifiClientMacAddress";
 static char *InstWifiClientDefReportingPeriod = "eRT.com.cisco.spvtg.ccsp.Device.WiFi.InstWifiClientDefReportingPeriod";
 static char *WiFiActiveMsmtEnabled = "eRT.com.cisco.spvtg.ccsp.Device.WiFi.WiFiActiveMsmtEnabled";
-static char *WiFiActiveMsmtRfcEnabled = "Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.WifiClient.ActiveMeasurements.Enable";
 static char *WiFiActiveMsmtPktSize = "eRT.com.cisco.spvtg.ccsp.Device.WiFi.WiFiActiveMsmtPktSize";
 static char *WiFiActiveMsmtNumberOfSample = "eRT.com.cisco.spvtg.ccsp.Device.WiFi.WiFiActiveMsmtNumberOfSample";
 static char *WiFiActiveMsmtSampleDuration = "eRT.com.cisco.spvtg.ccsp.Device.WiFi.WiFiActiveMsmtSampleDuration";
@@ -8699,10 +8697,7 @@ int wifi_db_update_global_config(wifi_global_param_t *global_cfg)
 
     memset(strValue, 0, sizeof(strValue));
 
-wifi_util_dbg_print(WIFI_MGR,"NTesting wifi_db_update_global_config function\n");
-
 #ifndef NEWPLATFORM_PORT
-    wifi_util_dbg_print(WIFI_MGR,"NTesting wifi_db_update_global_config function 2\n");
     str = p_ccsp_desc->psm_get_value_fn(WiFivAPStatsFeatureEnable, strValue, sizeof(strValue));
     if (str != NULL) {
         convert_ascii_string_to_bool(str, &global_cfg->vap_stats_feature);
