@@ -4897,24 +4897,6 @@ static void wifidb_global_config_upgrade()
                 __func__, __LINE__);
         }
 
-        memset(strValue, 0, sizeof(strValue));
-        str = p_ccsp_desc->psm_get_value_fn(WiFiActiveMsmtRfcEnabled, strValue, sizeof(strValue));
-        if (str != NULL) {
-            g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled = (atoi(str) != 0) ? true : false;
-            p_ccsp_desc->psm_set_value_fn(WiFiActiveMsmtEnabled, str);
-            wifi_util_dbg_print(WIFI_MGR,"global_config.wifi_active_msmt_enabled is %d (from RFC key, str=%s)\r\n", g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled, str);
-        } else {
-            memset(strValue, 0, sizeof(strValue));
-            str = p_ccsp_desc->psm_get_value_fn(WiFiActiveMsmtEnabled, strValue, sizeof(strValue));
-            if (str != NULL) {
-                convert_ascii_string_to_bool(str, &g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled);
-                wifi_util_dbg_print(WIFI_MGR,"global_config.wifi_active_msmt_enabled is %d (from legacy key, str=%s)\r\n", g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled, str);
-            } else {
-                g_wifidb->global_config.global_parameters.wifi_active_msmt_enabled = true;
-                wifi_util_dbg_print(WIFI_MGR,":%s:%d str value for wifi_active_msmt_enabled:%s \r\n", __func__, __LINE__, str);
-            }
-        }
-
     if (g_wifidb->db_version < ONEWIFI_DB_VERSION_CHUTILITY_LOGINTERVAL_FLAG) {
         wifi_util_dbg_print(WIFI_DB, "%s:%d upgrade global config, old db version %d \n", __func__,
             __LINE__, g_wifidb->db_version);
