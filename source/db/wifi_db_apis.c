@@ -7999,7 +7999,7 @@ int wifidb_init_global_config_default(wifi_global_param_t *config)
     cfg.inst_wifi_client_enabled = false;
     cfg.inst_wifi_client_reporting_period = 0;
     cfg.inst_wifi_client_def_reporting_period = 0;
-    cfg.wifi_active_msmt_enabled = true;
+    cfg.wifi_active_msmt_enabled = false;
     cfg.wifi_active_msmt_pktsize = 1470;
     cfg.wifi_active_msmt_num_samples = 5;
     cfg.wifi_active_msmt_sample_duration = 400;
