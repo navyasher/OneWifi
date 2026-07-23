@@ -592,6 +592,7 @@ void *ipc_unix_broadcast_client_start(void *arg)
     he_bus_conn_info_t *conn_info = get_bus_connection_object(handle);
     he_bus_client_info_t *p_client_info = &conn_info->client_info;
 
+    he_bus_conn_error_print("%s-%d : NTesting ipc_unix_broadcast_client_start\n", __func__, __LINE__);
     if (bus_client_bind(SOCKET_BROADCAST_SERVER_NAME, &p_client_info->conn_info) !=
         HE_BUS_RETURN_OK) {
         he_bus_conn_error_print("unix client socket start failure:%s\r\n",
@@ -627,6 +628,9 @@ void *ipc_unix_broadcast_client_start(void *arg)
         if (FD_ISSET(p_client_info->conn_info.fd, &read_fds)) {
             ret = recv_server_data(handle, &p_client_info->conn_info);
             if (ret == HE_BUS_ERROR_STREAM_CLOSED) {
+                if (p_client_info->conn_info.fd != SOCKET_INVALID_FD) {
+                    close(p_client_info->conn_info.fd);
+                }
                 p_client_info->conn_info.fd = -1;
                 sleep(20); //@TODO TBD Do we need to trigger retry for server connection ?
                 if (bus_client_bind(SOCKET_BROADCAST_SERVER_NAME, &p_client_info->conn_info) !=
@@ -640,7 +644,9 @@ void *ipc_unix_broadcast_client_start(void *arg)
             }
         }
     }
-    close(p_client_info->conn_info.fd);
+    if (p_client_info->conn_info.fd != SOCKET_INVALID_FD) {
+        close(p_client_info->conn_info.fd);
+    }
     return NULL;
 }
 

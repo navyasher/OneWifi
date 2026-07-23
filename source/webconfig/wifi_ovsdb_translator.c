@@ -1140,7 +1140,7 @@ webconfig_error_t webconfig_ovsdb_encode(webconfig_t *config,
     // rdk_wifi_radio_state change is added to avoid redundant config update from ovsm
     // this redundant update is triggered as part of ovsm config table update
     rdk_wifi_radio_t *rdk_wifi_radio_state;
-    wifi_util_info_print(WIFI_WEBCONFIG, "%s:%d: OVSM encode subdoc type %d\n", __func__, __LINE__,
+    wifi_util_info_print(WIFI_WEBCONFIG, "%s:%d: NTesting OVSM encode subdoc type %d\n", __func__, __LINE__,
         type);
 
     pthread_mutex_lock(&webconfig_data_lock);
@@ -1183,6 +1183,7 @@ webconfig_error_t webconfig_ovsdb_encode(webconfig_t *config,
         wifi_util_dbg_print(WIFI_WEBCONFIG, "%s:%d: No change in config for subdoc type : %d\n",
             __func__, __LINE__, type);
         *str = NULL;
+        webconfig_data_free(&webconfig_ovsdb_data);
         free_maclist_map(webconfig_ovsdb_data.u.decoded.num_radios, rdk_wifi_radio_state);
         free(rdk_wifi_radio_state);
         pthread_mutex_unlock(&webconfig_data_lock);

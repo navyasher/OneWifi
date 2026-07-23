@@ -1311,6 +1311,7 @@ bool radio_set_param_uint_value(void *obj_ins_context, char *param_name, uint32_
 bool radio_set_param_string_value(void *obj_ins_context, char *param_name,
     scratch_data_buff_t *output_value)
 {
+    wifi_util_error_print(WIFI_DMCLI, "%s-%d : NTesting radio_set_param_string_value\n", __func__, __LINE__);
     wifi_util_info_print(WIFI_DMCLI, "%s:%d: param name:%s\n", __func__, __LINE__, param_name);
     wifi_radio_operationParam_t *pcfg = (wifi_radio_operationParam_t *)obj_ins_context;
 

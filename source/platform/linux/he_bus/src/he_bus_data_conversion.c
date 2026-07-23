@@ -561,6 +561,7 @@ he_bus_error_t process_bus_sub_event(he_bus_handle_t handle, int socket_fd, char
     subscription_element_t *p_sub_data;
     sub_payload_data_t sub_recv_data;
 
+    he_bus_core_error_print("%s-%d : NTesting process_bus_sub_event\n", __func__, __LINE__);
     if (handle == NULL || handle->root_element == NULL || p_obj_data == NULL ||
         p_obj_data->name_len == 0) {
         he_bus_core_error_print("%s:%d Node root element or object name is NULL - msg from:%s\r\n",
@@ -600,6 +601,7 @@ he_bus_error_t process_bus_sub_event(he_bus_handle_t handle, int socket_fd, char
                     p_obj_data->data.raw_data_len);
                 p_sub_data->action = sub_recv_data.action;
             } else {
+                he_bus_free(p_sub_data);
                 ELM_UNLOCK(node->element_mutex);
                 he_bus_core_error_print("%s:%d wrong sub action raw data type:%d for %s\r\n",
                     __func__, __LINE__, p_obj_data->data.data_type, p_obj_data->name);

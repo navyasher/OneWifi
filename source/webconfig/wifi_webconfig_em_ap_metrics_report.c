@@ -140,6 +140,7 @@ webconfig_error_t decode_em_ap_metrics_report_subdoc(webconfig_t *config, webcon
     webconfig_subdoc_t  *doc;
     int i = 0;
 
+    wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: NTesting decode_em_ap_metrics_report_subdoc\n", __func__, __LINE__);
     params = &data->u.decoded;
     if (params == NULL) {
         wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: NULL json pointer\n", __func__, __LINE__);
@@ -174,6 +175,7 @@ webconfig_error_t decode_em_ap_metrics_report_subdoc(webconfig_t *config, webcon
     if (em_ap_report_arr == NULL || !cJSON_IsArray(em_ap_report_arr)) {
         wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: Invalid or missing EMAPMetricsReport\n",
             __func__, __LINE__);
+        cJSON_Delete(json);
         return webconfig_error_decode;
     }
 
@@ -182,6 +184,7 @@ webconfig_error_t decode_em_ap_metrics_report_subdoc(webconfig_t *config, webcon
         if (em_ap_report_obj == NULL) {
             wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: Invalid EMAPMetricsReport object at index %d\n",
                 __func__, __LINE__, i);
+            cJSON_Delete(json);
             return webconfig_error_decode;
         }
 
@@ -193,6 +196,7 @@ webconfig_error_t decode_em_ap_metrics_report_subdoc(webconfig_t *config, webcon
     }
     params->em_ap_metrics_report.radio_count = i;
 
+    cJSON_Delete(json);
     return webconfig_error_none;
 }
 #endif
